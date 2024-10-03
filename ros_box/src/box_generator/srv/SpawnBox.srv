@@ -1,0 +1,8 @@
+string[] boxes_id
+float32 mass
+float32 length
+float32 width
+float32 height
+---
+bool success
+string status_message

@@ -1,0 +1,4 @@
+string[] boxes_id
+---
+bool success
+string message
