@@ -1,21 +1,20 @@
 import sys
 
 from direct.showbase.ShowBase import ShowBase
-from panda3d.core import Filename, PNMImage, Point3, Texture, loadPrcFileData, PointLight
+from panda3d.core import Point3, loadPrcFileData, DirectionalLight, FrameBufferProperties, WindowProperties, GraphicsPipe
 
 
 class Panda3DApp(ShowBase):
     def __init__(self, height, width, depth):
         # headless mode
         loadPrcFileData("", "window-type offscreen")
+        # Enable transparency support
+        loadPrcFileData("", "framebuffer-alpha true")
 
         super().__init__()
 
-        # height = 20
-        # width = 10
-        # depth = 1
-
-        highest_value = max([height, width, depth])
+        minimum_camera_zoom = 1.5
+        highest_value = max([height, width, depth, minimum_camera_zoom])
 
         # Disable the default camera movement
         self.disableMouse()
@@ -39,12 +38,12 @@ class Panda3DApp(ShowBase):
         # Reparent the box to render
         self.box.reparentTo(self.render)
 
-        #self.plight = PointLight('plight')
-        #self.plight.setColor((0.8, 0.8, 0.8, 1))
-        #self.plnp = self.render.attachNewNode(self.plight)
-        #self.plnp.setPos(0, 0, height)
-        #self.render.setLight(self.plnp)
-        #self.plight.attenuation = (1, 0, 1)
+        # Light acting as a sun
+        self.dlight = DirectionalLight('dlight')
+        self.dlight.setColor((0.8, 0.8, 0.5, 1))
+        self.dlnp = self.render.attachNewNode(self.dlight)
+        self.dlnp.setHpr(30, -60, 0)
+        self.render.setLight(self.dlnp)
 
         # Add a task to take a screenshot and exit
         self.taskMgr.add(self.take_screenshot_and_exit, "take_screenshot_and_exit")
