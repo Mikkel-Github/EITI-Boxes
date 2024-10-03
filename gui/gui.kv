@@ -6,6 +6,7 @@ MDBoxLayout:
     pos_hint: {"center_x": .5, "center_y": .5}
 
     Image:
+        id: rendered_image
         source: '../rendered_image.png'
         size: self.texture_size
 
@@ -33,6 +34,7 @@ MDBoxLayout:
             pos_hint: {"center_x": .5, "center_y": .5}
 
             MDTextField:
+                id: height_input 
                 hint_text: "Height"
                 helper_text: "Measurement provided in centimeters"
                 helper_text_mode: "on_focus"
@@ -41,6 +43,7 @@ MDBoxLayout:
                 size_hint_x: 0.4
 
             MDTextField:
+                id: width_input 
                 hint_text: "Width"
                 helper_text: "Measurement provided in centimeters"
                 helper_text_mode: "on_focus"
@@ -49,6 +52,7 @@ MDBoxLayout:
                 size_hint_x: 0.4
 
             MDTextField:
+                id: depth_input 
                 hint_text: "Depth"
                 helper_text: "Measurement provided in centimeters"
                 helper_text_mode: "on_focus"

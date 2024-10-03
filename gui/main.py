@@ -1,3 +1,5 @@
+import subprocess
+
 import box_renderer
 from kivy.lang import Builder
 from kivymd.app import MDApp  # type: ignore
@@ -18,7 +20,19 @@ class BoxOptimizerApp(MDApp):
 
     def render_box(self):
         print("Rendering box")
-        box_renderer.Panda3DApp()
+
+        height = self.root.ids.height_input.text
+        width = self.root.ids.width_input.text
+        depth = self.root.ids.depth_input.text
+
+        subprocess.run(
+            ["python3", "./gui/box_renderer.py", str(height), str(width), str(depth)]
+        )
+
+        image_widget = self.root.ids.rendered_image
+        image_widget.source = "../rendered_image.png"
+        # image_widget.source = "./logo-kivymd.webp"
+        image_widget.reload()  # Force reload of the image
 
 
 if __name__ == "__main__":

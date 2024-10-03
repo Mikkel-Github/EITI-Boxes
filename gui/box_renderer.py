@@ -1,34 +1,50 @@
 import sys
 
 from direct.showbase.ShowBase import ShowBase
-from panda3d.core import Filename, PNMImage, Point3, Texture
+from panda3d.core import Filename, PNMImage, Point3, Texture, loadPrcFileData, PointLight
 
 
 class Panda3DApp(ShowBase):
-    def __init__(self):
+    def __init__(self, height, width, depth):
+        # headless mode
+        loadPrcFileData("", "window-type offscreen")
+
         super().__init__()
+
+        # height = 20
+        # width = 10
+        # depth = 1
+
+        highest_value = max([height, width, depth])
 
         # Disable the default camera movement
         self.disableMouse()
 
         # Set the camera position
-        self.camera.setPos(5, -10, 5)
+        self.camera.setPos(highest_value, highest_value * -2, highest_value)
         self.camera.lookAt(Point3(0, 0, 0))
 
         # Create a square box
         self.box = self.loader.loadModel("models/box")
 
         # Scale the box
-        self.box.setScale(1, 1, 1)
+        self.box.setScale(width, depth, height)
 
         # Set the box's position
-        self.box.setPos(-0.5, -0.5, -0.5)
+        self.box.setPos(width / 2 * -1, depth / 2 * -1, height / 2 * -1)
 
         self.box.setTextureOff(1)
         self.box.setColor(0.94, 0.74, 0.24, 1.0)
 
         # Reparent the box to render
         self.box.reparentTo(self.render)
+
+        #self.plight = PointLight('plight')
+        #self.plight.setColor((0.8, 0.8, 0.8, 1))
+        #self.plnp = self.render.attachNewNode(self.plight)
+        #self.plnp.setPos(0, 0, height)
+        #self.render.setLight(self.plnp)
+        #self.plight.attenuation = (1, 0, 1)
 
         # Add a task to take a screenshot and exit
         self.taskMgr.add(self.take_screenshot_and_exit, "take_screenshot_and_exit")
@@ -42,10 +58,22 @@ class Panda3DApp(ShowBase):
 
         # Exit the application
         # sys.exit()
+        # self.destroy()
+        self.taskMgr.stop()  # Stop the task manager
+        self.graphicsEngine.removeAllWindows()
         return task.done
 
 
-# if __name__ == "__main__":
-#     # Initialize the Panda3D application
-#     app = Panda3DApp()
-#     app.run()
+if __name__ == "__main__":
+    if len(sys.argv) != 4:
+        print("Usage: python3 panda_render.py <height> <width> <depth>")
+        sys.exit(1)
+
+    # Retrieve command-line arguments
+    height = float(sys.argv[1])
+    width = float(sys.argv[2])
+    depth = float(sys.argv[3])
+
+    # Initialize and run the Panda3D application
+    app = Panda3DApp(height, width, depth)
+    app.run()
