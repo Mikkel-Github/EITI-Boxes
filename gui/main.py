@@ -1,3 +1,4 @@
+import box_renderer
 from kivy.lang import Builder
 from kivymd.app import MDApp  # type: ignore
 from kivymd.uix.screen import MDScreen
@@ -14,6 +15,10 @@ class BoxOptimizerApp(MDApp):
         self.theme_cls.primary_palette = "Orange"
 
         return self.screen
+
+    def render_box(self):
+        print("Rendering box")
+        box_renderer.Panda3DApp()
 
 
 if __name__ == "__main__":
