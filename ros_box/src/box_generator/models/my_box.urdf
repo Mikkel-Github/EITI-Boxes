@@ -1,0 +1,38 @@
+<robot name="my_box">
+  <link name="box_link">
+    <!-- Inertial properties (mass, inertia) -->
+    <inertial>
+      <mass value="5.0"/> <!-- Mass in kg -->
+      <origin xyz="0 0 0" rpy="0 0 0"/> <!-- Position of the inertial frame -->
+      <inertia ixx="0.4167" ixy="0.0" ixz="0.0" iyy="0.4167" iyz="0.0" izz="0.4167"/> <!-- Adjusted for a 1m x 1m x 1m box -->
+    </inertial>
+    
+    <!-- Collision properties for physics -->
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <box size="1 1 1"/> <!-- Dimensions: length x width x height in meters -->
+      </geometry>
+    </collision>
+    
+    <!-- Visual properties for rendering -->
+    <visual>
+      <origin xyz="0 0 20" rpy="0 0.5 0"/>
+      <geometry>
+        <box size="1 1 1"/> <!-- Same size as the collision box -->
+      </geometry>
+      <material name="Red">
+        <color rgba="0.8 0.2 0.2 1.0"/> <!-- Red box with full opacity -->
+      </material>
+    </visual>
+    
+    <!-- Optional: Gazebo-specific parameters -->
+    <gazebo>
+      <mu1>0.5</mu1> <!-- Friction coefficient in one direction -->
+      <mu2>0.5</mu2> <!-- Friction coefficient in the other direction -->
+      <restitution_coefficient>0.1</restitution_coefficient> <!-- Bounciness -->
+      <minDepth>0.001</minDepth> <!-- Minimum depth for contact resolution -->
+      <restitution_coefficient>0.1</restitution_coefficient> <!-- Bounciness -->
+    </gazebo>
+  </link>
+</robot>

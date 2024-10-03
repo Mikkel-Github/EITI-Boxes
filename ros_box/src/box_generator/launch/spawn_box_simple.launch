@@ -1,0 +1,18 @@
+<launch>
+  <!-- Argument for the model path -->
+  <arg name="model" default="$(find box_generator)/models/my_box.urdf"/>
+
+  <!-- Launch an empty world in Gazebo -->
+  <include file="$(find gazebo_ros)/launch/empty_world.launch">
+    <!-- Optional: Start the simulation paused, with GUI enabled -->
+    <arg name="paused" value="false"/>
+    <arg name="use_sim_time" value="true"/>
+    <arg name="gui" value="true"/>
+    <arg name="world_name" value="$(find gazebo_ros)/worlds/empty.world"/>
+  </include>
+
+  <!-- Spawn the box model into the world -->
+  <node name="spawn_urdf" pkg="gazebo_ros" type="spawn_model" 
+        args="-file $(arg model) -urdf -model my_box" 
+        output="screen"/>
+</launch>

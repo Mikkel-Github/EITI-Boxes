@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<launch>
+    <include file="$(find box_generator)/launch/spawn_sdf.launch">
+        <arg name="robot_name" value="box" />  <!--- Box ID: Must be different for having multiples models!-->
+        <!--- Box Position + Orientation !-->
+        <arg name="x" value="0.0" />
+        <arg name="y" value="0.0" />
+        <arg name="z" value="10.0" />
+        <arg name="roll" value="0"/>
+        <arg name="pitch" value="0"/>
+        <arg name="yaw" value="0.0" />
+
+        <!--- Boxes dimensions !-->
+        <arg name="mass" value="1.0" />
+        <arg name="length" value="1.0" />
+        <arg name="width" value="1.0" />
+        <arg name="height" value="1.0" />
+
+        <arg name="sdf_robot_file" value="$(find box_generator)/models/box.sdf" />
+    </include>
+</launch>
