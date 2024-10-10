@@ -1,0 +1,70 @@
+MDBoxLayout:
+    orientation: "horizontal"
+    spacing: "20dp"
+    adaptive_height: True
+    size_hint_x: .8
+    pos_hint: {"center_x": .5, "center_y": .5}
+
+    Image:
+        id: rendered_image
+        source: '../rendered_image.png'
+        size: self.texture_size
+
+    MDBoxLayout:
+        orientation: "vertical"
+        spacing: "20dp"
+        adaptive_height: True
+        size_hint_x: .8
+        pos_hint: {"center_x": .5, "center_y": .5}
+
+        MDLabel:
+            text: "Box specifications"
+            font_style: "H5"
+
+        MDTextField:
+            hint_text: "Amount"
+            input_filter: 'int'
+            multiline: False
+            size_hint_x: 0.4
+
+        MDBoxLayout:
+            orientation: "vertical"
+            spacing: "5dp"
+            adaptive_height: True
+            pos_hint: {"center_x": .5, "center_y": .5}
+
+            MDTextField:
+                id: height_input 
+                hint_text: "Height"
+                helper_text: "Measurement provided in centimeters"
+                helper_text_mode: "on_focus"
+                input_filter: 'float'
+                multiline: False
+                size_hint_x: 0.4
+
+            MDTextField:
+                id: width_input 
+                hint_text: "Width"
+                helper_text: "Measurement provided in centimeters"
+                helper_text_mode: "on_focus"
+                input_filter: 'float'
+                multiline: False
+                size_hint_x: 0.4
+
+            MDTextField:
+                id: depth_input 
+                hint_text: "Depth"
+                helper_text: "Measurement provided in centimeters"
+                helper_text_mode: "on_focus"
+                input_filter: 'float'
+                multiline: False
+                size_hint_x: 0.4
+
+            MDRoundFlatButton:
+                padding: 20
+                text: "Simulate"
+                text_color: "white"
+                pos_hint: {"center_x": .5, "center_y": .5}
+                font_size: 34
+                line_width: 2
+                on_press: app.render_box()
