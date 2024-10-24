@@ -23,35 +23,6 @@ def reset_gazebo():
     except rospy.ServiceException as e:
         print("Error reseting world: %s" % e)
 
-def delete_model(model_name):
-    # Esperar hasta que el servicio delete_model esté disponible
-    rospy.wait_for_service('/gazebo/delete_model')
-    
-    try:
-        # Crear un cliente para el servicio delete_model
-        delete_model_service = rospy.ServiceProxy('/gazebo/delete_model', DeleteModel)
-        
-        # Llamar al servicio con el nombre del modelo a eliminar
-        response = delete_model_service(model_name)
-        
-        if response.success:
-            rospy.loginfo(f"Model '{model_name}' removed sucesfully.")
-        else:
-            rospy.logwarn(f"Unable to remove the model '{model_name}': {response.status_message}")
-    
-    except rospy.ServiceException as e:
-        rospy.logerr(f"Error calling Gazebo delete model service: {e}")
-
-# Process msg from topic /gazebo/link_states
-def gazebo_callback(msg):
-  global pose_dic
-  for name, pose in zip(msg.name, msg.pose):
-    if name == "mir::base_footprint" or name.startswith("Box_"):
-      #pose_dic{name}=pose
-      rospy.loginfo("Nombre: %s, Posición: (%f, %f, %f)", name, pose.position.x, pose.position.y, pose.position.z)
-      # print("#########################################################")
-
-
 
 if __name__ == '__main__':
   rospy.init_node('box_spawner')

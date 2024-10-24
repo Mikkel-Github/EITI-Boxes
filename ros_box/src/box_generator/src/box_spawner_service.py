@@ -6,6 +6,7 @@ from box_generator.srv import SpawnBox, SpawnBoxResponse, DeleteBox, DeleteBoxRe
 
 pose_mir = None
 
+############ CALL BACK: RECEIVE MIR POSITION ##########################
 def gazebo_callback(msg):
     global pose_mir
     for name, pose in zip(msg.name, msg.pose):
@@ -14,7 +15,41 @@ def gazebo_callback(msg):
 
         #rospy.loginfo("Nombre: %s, Posición: (%f, %f, %f)", name, pose.position.x, pose.position.y, pose.position.z)
 
-def boxes_placement(n_boxes):
+############# SERVICE: SPAWN BOXES ####################
+
+def spawn_boxes_service(req):    
+    n_boxes = len(req.boxes_id)
+
+    # Determine boxes position:
+    poses = simple_boxes_placement(n_boxes)
+    # TODO: Script to arange the boxes in a determined shape
+    
+    try:
+        for i in range(n_boxes):
+          box_id = req.boxes_id[i]
+          spawn_single_box(req, box_id, poses[i])
+        return SpawnBoxResponse(True, f"Done!")
+    except rospy.ServiceException as e:
+        rospy.logerr(f"Service call failed: {e}")
+        return SpawnBoxResponse(False, str(e))
+    
+def spawn_single_box(req, box_id, pose):
+
+    # Generate SDF model:
+    model_name = box_id
+    mass = req.mass
+    length = req.length
+    width = req.width
+    height = req.height
+    sdf_content = generate_urdf(model_name, mass, length, width, height)
+
+    rospy.wait_for_service('/gazebo/spawn_sdf_model')
+    spawn_model = rospy.ServiceProxy('/gazebo/spawn_sdf_model', SpawnModel)
+    spawn_model(model_name, sdf_content, '', pose, 'world')
+    rospy.loginfo(f"Model '{model_name}' spawned successfully")
+
+def simple_boxes_placement(n_boxes):
+    # Simple script to make a pile of boxes
     global pose_mir
 
     poses = []
@@ -29,38 +64,8 @@ def boxes_placement(n_boxes):
 
     return poses
 
-def spawn_boxes_service(req):    
-    n_boxes = len(req.boxes_id)
-
-    # Determine boxes position:
-    poses = boxes_placement(n_boxes)
-    # TODO: Script to arange the boxes in a determined shape
-
-    for i in range(n_boxes):
-        box_id = req.boxes_id[i]
-        spawn_single_box(req, box_id, poses[i])
-    
-    try:
-        return SpawnBoxResponse(True, f"Done!")
-    except rospy.ServiceException as e:
-        rospy.logerr(f"Service call failed: {e}")
-        return SpawnBoxResponse(False, str(e))
-    
-def spawn_single_box(req, box_id, pose):
-
-    # Generate SDF model:
-    model_name = box_id
-    mass = req.mass
-    length = req.length
-    width = req.width
-    height = req.height
-    sdf_content = generate_sdf(model_name, mass, length, width, height)
-
-    rospy.wait_for_service('/gazebo/spawn_sdf_model')
-    spawn_model = rospy.ServiceProxy('/gazebo/spawn_sdf_model', SpawnModel)
-    spawn_model(model_name, sdf_content, '', pose, 'world')
-    rospy.loginfo(f"Model '{model_name}' spawned successfully")
-        
+############ SERVICE: DELETE BOXES #####################
+#       
 def delete_box_service(req):
     boxes_id = req.boxes_id
 
@@ -95,8 +100,10 @@ def delete_model(model_name):
         rospy.logerr(f"Error calling Gazebo delete model service: {e}")
         return False, str(e)
 
-def generate_sdf(model_name, mass, length, width, height):
-  # Generar el contenido SDF
+############ GENERATE BOX MODEL ##################
+
+def generate_urdf(model_name, mass, length, width, height):
+  # Generar el contenido URDF
   sdf_content = f"""
   <?xml version='1.0'?>
   <sdf version="1.4">
