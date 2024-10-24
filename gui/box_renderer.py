@@ -33,14 +33,14 @@ class Panda3DApp(ShowBase):
         self.box.setPos(width / 2 * -1, depth / 2 * -1, height / 2 * -1)
 
         self.box.setTextureOff(1)
-        self.box.setColor(0.94, 0.74, 0.24, 1.0)
+        self.box.setColor(156/255, 134/255, 100/255, 1.0)
 
         # Reparent the box to render
         self.box.reparentTo(self.render)
 
         # Light acting as a sun
         self.dlight = DirectionalLight('dlight')
-        self.dlight.setColor((0.8, 0.8, 0.5, 1))
+        self.dlight.setColor((1, 1, 1, 1))
         self.dlnp = self.render.attachNewNode(self.dlight)
         self.dlnp.setHpr(30, -60, 0)
         self.render.setLight(self.dlnp)

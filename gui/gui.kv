@@ -1,14 +1,119 @@
-MDBoxLayout:
-    orientation: "horizontal"
-    spacing: "20dp"
-    adaptive_height: True
-    size_hint_x: .8
-    pos_hint: {"center_x": .5, "center_y": .5}
+MDScreenManager:
+    BoxSpecificationWindow:
+    SimulationWindow:
 
-    Image:
-        id: rendered_image
-        source: '../rendered_image.png'
-        size: self.texture_size
+<BoxSpecificationWindow>:
+    name: 'box_specification_window'
+
+    MDBoxLayout:
+        orientation: "horizontal"
+        spacing: "20dp"
+        adaptive_height: True
+        size_hint_x: .8
+        pos_hint: {"center_x": .5, "center_y": .5}
+
+        MDBoxLayout:
+            orientation: "vertical"
+            spacing: "0dp"
+            pos_hint: {"center_x": .5, "center_y": .5}
+            size_hint_y: None
+            height: self.minimum_height
+
+            MDLabel:
+                text: "Box Preview"
+                size_hint_y: None
+                allow_selection: False
+                height: self.texture_size[1]
+                font_style: "H6"
+
+            Image:
+                id: rendered_image
+                source: '../rendered_image.png'
+                size_hint: None, None
+                width: dp(300)
+                height: dp(300)
+                allow_stretch: False
+
+
+        MDBoxLayout:
+            orientation: "vertical"
+            spacing: "20dp"
+            adaptive_height: True
+            size_hint_x: .8
+            pos_hint: {"center_x": .5, "center_y": .5}
+
+            MDLabel:
+                text: "Box specifications"
+                font_style: "H5"
+
+            MDTextField:
+                id: amount_input 
+                hint_text: "Amount"
+                input_filter: 'int'
+                write_tab: False
+                multiline: False
+                size_hint_x: 0.4
+
+            MDBoxLayout:
+                orientation: "vertical"
+                spacing: "5dp"
+                adaptive_height: True
+                pos_hint: {"center_x": .5, "center_y": .5}
+
+                MDTextField:
+                    id: mass_input 
+                    hint_text: "Mass"
+                    helper_text: "The weight of one box in grams"
+                    helper_text_mode: "on_focus"
+                    input_filter: 'float'
+                    write_tab: False
+                    multiline: False
+                    size_hint_x: 0.4
+
+                MDTextField:
+                    id: height_input 
+                    hint_text: "Height"
+                    helper_text: "Measurement provided in centimeters"
+                    helper_text_mode: "on_focus"
+                    input_filter: 'float'
+                    write_tab: False
+                    multiline: False
+                    size_hint_x: 0.4
+                    on_text: app.render_box()
+
+                MDTextField:
+                    id: width_input 
+                    hint_text: "Width"
+                    helper_text: "Measurement provided in centimeters"
+                    helper_text_mode: "on_focus"
+                    input_filter: 'float'
+                    write_tab: False
+                    multiline: False
+                    size_hint_x: 0.4
+                    on_text: app.render_box()
+
+                MDTextField:
+                    id: depth_input 
+                    hint_text: "Depth"
+                    helper_text: "Measurement provided in centimeters"
+                    helper_text_mode: "on_focus"
+                    input_filter: 'float'
+                    write_tab: False
+                    multiline: False
+                    size_hint_x: 0.4
+                    on_text: app.render_box()
+
+                MDRoundFlatButton:
+                    padding: 20
+                    text: "Simulate"
+                    text_color: "white"
+                    pos_hint: {"center_x": .5, "center_y": .5}
+                    font_size: 34
+                    line_width: 2
+                    on_press: app.run_simulation()
+
+<SimulationWindow>:
+    name: 'simulation_window'
 
     MDBoxLayout:
         orientation: "vertical"
@@ -18,53 +123,23 @@ MDBoxLayout:
         pos_hint: {"center_x": .5, "center_y": .5}
 
         MDLabel:
-            text: "Box specifications"
+            text: "Running Simulation"
             font_style: "H5"
 
-        MDTextField:
-            hint_text: "Amount"
-            input_filter: 'int'
-            multiline: False
-            size_hint_x: 0.4
-
-        MDBoxLayout:
-            orientation: "vertical"
-            spacing: "5dp"
-            adaptive_height: True
+        MDRoundFlatButton:
+            padding: 20
+            text: "Delete Boxes"
+            text_color: "red"
             pos_hint: {"center_x": .5, "center_y": .5}
+            font_size: 34
+            line_width: 2
+            on_press: app.delete_boxes()
 
-            MDTextField:
-                id: height_input 
-                hint_text: "Height"
-                helper_text: "Measurement provided in centimeters"
-                helper_text_mode: "on_focus"
-                input_filter: 'float'
-                multiline: False
-                size_hint_x: 0.4
-
-            MDTextField:
-                id: width_input 
-                hint_text: "Width"
-                helper_text: "Measurement provided in centimeters"
-                helper_text_mode: "on_focus"
-                input_filter: 'float'
-                multiline: False
-                size_hint_x: 0.4
-
-            MDTextField:
-                id: depth_input 
-                hint_text: "Depth"
-                helper_text: "Measurement provided in centimeters"
-                helper_text_mode: "on_focus"
-                input_filter: 'float'
-                multiline: False
-                size_hint_x: 0.4
-
-            MDRoundFlatButton:
-                padding: 20
-                text: "Simulate"
-                text_color: "white"
-                pos_hint: {"center_x": .5, "center_y": .5}
-                font_size: 34
-                line_width: 2
-                on_press: app.render_box()
+        MDRoundFlatButton:
+            padding: 20
+            text: "Stop Simulation"
+            text_color: "red"
+            pos_hint: {"center_x": .5, "center_y": .5}
+            font_size: 34
+            line_width: 2
+            on_press: app.stop_simulation()
