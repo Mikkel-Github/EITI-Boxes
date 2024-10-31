@@ -32,7 +32,7 @@ if __name__ == '__main__':
   spawn_box = rospy.ServiceProxy('spawn_box', SpawnBox)
   delete_box = rospy.ServiceProxy('delete_box', DeleteBox)
 
-  n_boxes = 3
+  n_boxes = 10
   
   # Generate boxes name:
   boxes_id = ["Box_"+str(i) for i in range(n_boxes)]
