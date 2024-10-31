@@ -25,8 +25,8 @@
                         </div>
                         <!-- Depth -->
                         <div class="Input-Field-Container Column">
-                            <span>Depth</span>
-                            <input v-model="dimensions.depth" placeholder="depth" @mousedown="dimensions.depth=''">
+                            <span>Length</span>
+                            <input v-model="dimensions.length" placeholder="length" @mousedown="dimensions.length=''">
                         </div>
                     </div>
                     <hr>
@@ -39,6 +39,13 @@
                                 <span>Autofit amount of boxes:</span>
                                 <input v-model="autofit" type="checkbox">
                             </div>
+                        </div>
+                    </div>
+                    <!-- Mass -->
+                    <div class="Input-Field-Container Column">
+                        <span>Mass of one box</span>
+                        <div class="Row">
+                            <input v-model="mass" placeholder="mass" @mousedown="mass=''" :disabled="autofit">
                         </div>
                     </div>
 
@@ -127,9 +134,10 @@ import mqttService from '@/services/MqttService';
 export default {
     data() {
         return {
+            mass: 0,
             amount: 0,
             autofit: false,
-            dimensions: {height: 0, width: 0, depth: 0},
+            dimensions: {height: 0, width: 0, length: 0},
         }
     },
     props: {
@@ -138,7 +146,8 @@ export default {
     },
     methods: {
         publishMessage() {
-            mqttService.publish('your/topic', 'Hello from Vue!');
+            let payload = {n_boxes: this.amount, mass: this.mass, height: this.dimensions.height, width: this.dimensions.width, lenght: this.dimensions.length}
+            mqttService.publish('box_spawner/spawn',JSON.stringify(payload));
         }
     },
     mounted() {
