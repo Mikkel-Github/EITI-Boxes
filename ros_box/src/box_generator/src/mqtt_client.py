@@ -1,4 +1,4 @@
-#import box_spawner_client as box
+from box_spawner_client import spawn_boxes, reset_gazebo
 import paho.mqtt.client as mqtt
 import json
 
@@ -26,9 +26,9 @@ def on_message(client, userdata, msg):
         # Call box spawn algorithm
         # if algorithm didn't fail - Call spawn boxes
         print("Spawn boxes")
-        #box.spawn_boxes(payload.n_boxes, payload.mass, payload.height, payload.width, payload.length)
+        spawn_boxes(payload['n_boxes'], payload['mass'], payload['height'], payload['width'], payload['length'])
     elif(str(msg.topic) == "box_spawner/reset"):
-        #box.reset_gazebo()
+        reset_gazebo()
         print("Reset Simulation")
 
 

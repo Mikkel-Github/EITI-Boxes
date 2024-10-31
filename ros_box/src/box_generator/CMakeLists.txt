@@ -172,6 +172,7 @@ catkin_install_python(PROGRAMS
    src/box_spawner.py
    src/box_spawner_service.py
    src/box_spawner_client.py
+   src/mqtt_client.py
    DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
  )
 
