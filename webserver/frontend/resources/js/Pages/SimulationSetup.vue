@@ -48,15 +48,13 @@
                             <input v-model="mass" placeholder="mass" @mousedown="mass=''" :disabled="autofit">
                         </div>
                     </div>
-
-                    {{ amount }}
-                    {{ dimensions.height }}
-                    {{ dimensions.width }}
-                    {{ dimensions.depth }}
                 </div>
             </div>
             <div class="Row Flex V-Center" style="margin-top: 2rem;">
                 <button class="btn btn-blue" @click="publishMessage">Start</button>
+            </div>
+            <div class="Row Flex V-Center" style="margin-top: 2rem;">
+                <button class="btn btn-red" @click="resetSimulation">Reset Simulation</button>
             </div>
         </div>
     </div>
@@ -90,6 +88,12 @@ hr {
 }
 .btn-blue:hover {
     @apply bg-blue-700;
+}
+.btn-red {
+    @apply bg-red-500 text-white;
+}
+.btn-red:hover {
+    @apply bg-red-700;
 }
 .Row {
     display: flex;
@@ -148,6 +152,9 @@ export default {
         publishMessage() {
             let payload = {n_boxes: this.amount, mass: this.mass, height: this.dimensions.height, width: this.dimensions.width, lenght: this.dimensions.length}
             mqttService.publish('box_spawner/spawn',JSON.stringify(payload));
+        },
+        resetSimulation() {
+            mqttService.publish('box_spawner/reset');
         }
     },
     mounted() {

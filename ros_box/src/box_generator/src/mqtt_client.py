@@ -1,4 +1,4 @@
-import box_spawner_client as box
+#import box_spawner_client as box
 import paho.mqtt.client as mqtt
 import json
 
@@ -9,20 +9,27 @@ def on_connect(client, userdata, flags, reason_code, properties):
     # Subscribing in on_connect() means that if we lose the connection and
     # reconnect then subscriptions will be renewed.
     client.subscribe("box_spawner/spawn")
-    client.subscribe("box_spawner/delete")
+    client.subscribe("box_spawner/delete") # don't know if we need this
     client.subscribe("box_spawner/reset")
 
 
 # The callback for when a PUBLISH message is received from the server.
 def on_message(client, userdata, msg):
     print(str(msg.payload))
-    payload = json.loads(msg.payload)
+    payload = ""
+    if(str(msg.payload) != "b''"): # Payload is NOT empty
+        payload = json.loads(msg.payload)
+
     print(msg.topic + " " + str(payload))
 
     if(str(msg.topic) == "box_spawner/spawn"):
         # Call box spawn algorithm
         # if algorithm didn't fail - Call spawn boxes
-        box.spawn_boxes(payload.n_boxes, payload.mass, payload.height, payload.width, payload.length)
+        print("Spawn boxes")
+        #box.spawn_boxes(payload.n_boxes, payload.mass, payload.height, payload.width, payload.length)
+    elif(str(msg.topic) == "box_spawner/reset"):
+        #box.reset_gazebo()
+        print("Reset Simulation")
 
 
 mqttc = mqtt.Client(mqtt.CallbackAPIVersion.VERSION2)
