@@ -1,0 +1,33 @@
+<template>
+    <div class="Row Flex" style="margin-bottom: 3rem; background-color: #212121; gap: 0;">
+        <div class="Column">
+            <img src="../../../images/logo.png" style="max-width: 6rem; height: auto;" />
+        </div>
+        <div class="Column Flex" style="border-bottom: 2px solid #e9b66f;">
+            <div class="Column Flex">
+            </div>
+            <div class="Row" style="padding: 2rem; padding-bottom: 0.4rem; padding-top: 0.4rem; gap: 2rem; background-color: #212121;">
+                <button class="Header-Btn">Transportation Setup</button>
+                <span class="vr" />
+                <button class="Header-Btn">Current Setup</button>
+                <span class="vr" />
+                <button class="Header-Btn">Reports</button>
+
+                <div class="Row Flex" />
+
+                <button class="Header-Btn">Log out</button>
+            </div>
+        </div>
+    </div>
+</template>
+
+<style>
+.Header-Btn {
+    font-weight: bold;
+    color: #e9b66f;
+    transition: color 0.2s;
+}
+.Header-Btn:hover {
+    color: #b58848;
+}
+</style>

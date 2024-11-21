@@ -9,7 +9,10 @@ use App\Http\Middleware\CorsMiddleware;
 // Apply CORS Middleware to all routes
 Route::middleware([CorsMiddleware::class])->group(function () {
     Route::get('/', function () {
-        return Inertia::render('SimulationSetup');
+        return Inertia::render('Dashboard');
+    });
+    Route::get('/simulation', function () {
+        return Inertia::render('SimulationFeed');
     });
 
     // Uncomment and add any additional routes as needed
