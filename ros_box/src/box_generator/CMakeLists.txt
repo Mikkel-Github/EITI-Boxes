@@ -60,7 +60,7 @@ add_service_files(
    FILES
    SpawnBox.srv
    DeleteBox.srv
-   #Service2.srv
+   SetParam.srv
  )
 
 ## Generate actions in the 'action' folder
@@ -74,6 +74,7 @@ add_service_files(
  generate_messages(
    DEPENDENCIES
    std_msgs  # Or other packages containing msgs
+   geometry_msgs
  )
 
 ################################################
@@ -172,7 +173,10 @@ catkin_install_python(PROGRAMS
    src/box_spawner.py
    src/box_spawner_service.py
    src/box_spawner_client.py
-   src/mqtt_client.py
+   src/master.py
+   src/check_falls.py
+   src/param_service.py
+   src/statistic_test_main.py
    DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
  )
 

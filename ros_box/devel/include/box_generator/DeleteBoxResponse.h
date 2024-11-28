@@ -154,7 +154,6 @@ struct Definition< ::box_generator::DeleteBoxResponse_<ContainerAllocator> >
   {
     return "bool success\n"
 "string message\n"
-"\n"
 ;
   }
 

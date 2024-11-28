@@ -14,13 +14,15 @@
 
 (in-package "ROS")
 
+(if (not (find-package "GEOMETRY_MSGS"))
+  (ros::roseus-add-msgs "geometry_msgs"))
 
 
 
 
 (defclass box_generator::SpawnBoxRequest
   :super ros::object
-  :slots (_boxes_id _mass _length _width _height ))
+  :slots (_boxes_id _mass _length _width _height _poses ))
 
 (defmethod box_generator::SpawnBoxRequest
   (:init
@@ -30,6 +32,7 @@
     ((:length __length) 0.0)
     ((:width __width) 0.0)
     ((:height __height) 0.0)
+    ((:poses __poses) ())
     )
    (send-super :init)
    (setq _boxes_id __boxes_id)
@@ -37,6 +40,7 @@
    (setq _length (float __length))
    (setq _width (float __width))
    (setq _height (float __height))
+   (setq _poses __poses)
    self)
   (:boxes_id
    (&optional __boxes_id)
@@ -53,6 +57,13 @@
   (:height
    (&optional __height)
    (if __height (setq _height __height)) _height)
+  (:poses
+   (&rest __poses)
+   (if (keywordp (car __poses))
+       (send* _poses __poses)
+     (progn
+       (if __poses (setq _poses (car __poses)))
+       _poses)))
   (:serialization-length
    ()
    (+
@@ -66,6 +77,8 @@
     4
     ;; float32 _height
     4
+    ;; geometry_msgs/Pose[] _poses
+    (apply #'+ (send-all _poses :serialization-length)) 4
     ))
   (:serialize
    (&optional strm)
@@ -84,6 +97,11 @@
        (sys::poke _width (send s :buffer) (send s :count) :float) (incf (stream-count s) 4)
      ;; float32 _height
        (sys::poke _height (send s :buffer) (send s :count) :float) (incf (stream-count s) 4)
+     ;; geometry_msgs/Pose[] _poses
+     (write-long (length _poses) s)
+     (dolist (elem _poses)
+       (send elem :serialize s)
+       )
      ;;
      (if (null strm) (get-output-stream-string s))))
   (:deserialize
@@ -103,6 +121,13 @@
      (setq _width (sys::peek buf ptr- :float)) (incf ptr- 4)
    ;; float32 _height
      (setq _height (sys::peek buf ptr- :float)) (incf ptr- 4)
+   ;; geometry_msgs/Pose[] _poses
+   (let (n)
+     (setq n (sys::peek buf ptr- :integer)) (incf ptr- 4)
+     (setq _poses (let (r) (dotimes (i n) (push (instance geometry_msgs::Pose :init) r)) r))
+     (dolist (elem- _poses)
+     (send elem- :deserialize buf ptr-) (incf ptr- (send elem- :serialization-length))
+     ))
    ;;
    self)
   )
@@ -159,7 +184,7 @@
   :super ros::object
   :slots ())
 
-(setf (get box_generator::SpawnBox :md5sum-) "45a1e59f6217c34ce24acbd9cc8ec4e3")
+(setf (get box_generator::SpawnBox :md5sum-) "48f94fb5a1b1f9bff04b2ea497ff928c")
 (setf (get box_generator::SpawnBox :datatype-) "box_generator/SpawnBox")
 (setf (get box_generator::SpawnBox :request) box_generator::SpawnBoxRequest)
 (setf (get box_generator::SpawnBox :response) box_generator::SpawnBoxResponse)
@@ -167,7 +192,7 @@
 (defmethod box_generator::SpawnBoxRequest
   (:response () (instance box_generator::SpawnBoxResponse :init)))
 
-(setf (get box_generator::SpawnBoxRequest :md5sum-) "45a1e59f6217c34ce24acbd9cc8ec4e3")
+(setf (get box_generator::SpawnBoxRequest :md5sum-) "48f94fb5a1b1f9bff04b2ea497ff928c")
 (setf (get box_generator::SpawnBoxRequest :datatype-) "box_generator/SpawnBoxRequest")
 (setf (get box_generator::SpawnBoxRequest :definition-)
       "string[] boxes_id
@@ -175,13 +200,36 @@ float32 mass
 float32 length
 float32 width
 float32 height
+geometry_msgs/Pose[] poses
+
+================================================================================
+MSG: geometry_msgs/Pose
+# A representation of pose in free space, composed of position and orientation. 
+Point position
+Quaternion orientation
+
+================================================================================
+MSG: geometry_msgs/Point
+# This contains the position of a point in free space
+float64 x
+float64 y
+float64 z
+
+================================================================================
+MSG: geometry_msgs/Quaternion
+# This represents an orientation in free space in quaternion form.
+
+float64 x
+float64 y
+float64 z
+float64 w
 ---
 bool success
 string status_message
 
 ")
 
-(setf (get box_generator::SpawnBoxResponse :md5sum-) "45a1e59f6217c34ce24acbd9cc8ec4e3")
+(setf (get box_generator::SpawnBoxResponse :md5sum-) "48f94fb5a1b1f9bff04b2ea497ff928c")
 (setf (get box_generator::SpawnBoxResponse :datatype-) "box_generator/SpawnBoxResponse")
 (setf (get box_generator::SpawnBoxResponse :definition-)
       "string[] boxes_id
@@ -189,6 +237,29 @@ float32 mass
 float32 length
 float32 width
 float32 height
+geometry_msgs/Pose[] poses
+
+================================================================================
+MSG: geometry_msgs/Pose
+# A representation of pose in free space, composed of position and orientation. 
+Point position
+Quaternion orientation
+
+================================================================================
+MSG: geometry_msgs/Point
+# This contains the position of a point in free space
+float64 x
+float64 y
+float64 z
+
+================================================================================
+MSG: geometry_msgs/Quaternion
+# This represents an orientation in free space in quaternion form.
+
+float64 x
+float64 y
+float64 z
+float64 w
 ---
 bool success
 string status_message
@@ -197,6 +268,6 @@ string status_message
 
 
 
-(provide :box_generator/SpawnBox "45a1e59f6217c34ce24acbd9cc8ec4e3")
+(provide :box_generator/SpawnBox "48f94fb5a1b1f9bff04b2ea497ff928c")
 
 

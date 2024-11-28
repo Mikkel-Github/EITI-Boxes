@@ -1,16 +1,14 @@
 (cl:in-package box_generator-srv)
-(cl:export '(BOXES_ID-VAL
-          BOXES_ID
+(cl:export '(N_BOXES-VAL
+          N_BOXES
           MASS-VAL
           MASS
-          LENGTH-VAL
-          LENGTH
-          WIDTH-VAL
-          WIDTH
           HEIGHT-VAL
           HEIGHT
-          POSES-VAL
-          POSES
+          WIDTH-VAL
+          WIDTH
+          LENGTH-VAL
+          LENGTH
           SUCCESS-VAL
           SUCCESS
           STATUS_MESSAGE-VAL

@@ -36,8 +36,9 @@ def spawn_boxes_service(req):
     n_boxes = len(req.boxes_id)
 
     # Determine boxes position:
-    poses = simple_boxes_placement(req)
-    # TODO: Script to arange the boxes in a determined shape
+    #poses = simple_boxes_placement(req)
+    poses = req.poses
+    
     
     try:
         for i in range(n_boxes):
@@ -147,24 +148,20 @@ def simple_boxes_placement(req):
       if break_all:
          break
         
-                    
-    # poses = []
-    # for n in range(req.n_boxes):
-    #     pose = Pose()
-    #     pose.position.x = pose_mir.position.x
-    #     pose.position.y = pose_mir.position.y
-    #     pose.position.z = pose_mir.position.z + 0.3 + 0.2*n
-    #     pose.orientation = pose_mir.orientation
 
-    #     poses.append(pose)
 
     return pose_list
+
+
 
 ############ SERVICE: DELETE BOXES #####################
 #       
 def delete_box_service(req):
     boxes_id_list = req.boxes_id
     boxes_id_list.reverse()
+    success = False
+    print('BOXES ID', boxes_id_list)
+    
     for box_id in boxes_id_list:
         rospy.loginfo(f"Received request to delete model: {box_id}")
         success, message = delete_model(box_id)

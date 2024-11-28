@@ -130,7 +130,6 @@
 ---
 bool success
 string message
-
 ")
 
 (setf (get box_generator::DeleteBoxResponse :md5sum-) "82214afe4ff077ebd4b8aa0c572e1255")
@@ -140,7 +139,6 @@ string message
 ---
 bool success
 string message
-
 ")
 
 

@@ -31,7 +31,12 @@
     :reader height
     :initarg :height
     :type cl:float
-    :initform 0.0))
+    :initform 0.0)
+   (poses
+    :reader poses
+    :initarg :poses
+    :type (cl:vector geometry_msgs-msg:Pose)
+   :initform (cl:make-array 0 :element-type 'geometry_msgs-msg:Pose :initial-element (cl:make-instance 'geometry_msgs-msg:Pose))))
 )
 
 (cl:defclass SpawnBox-request (<SpawnBox-request>)
@@ -66,6 +71,11 @@
 (cl:defmethod height-val ((m <SpawnBox-request>))
   (roslisp-msg-protocol:msg-deprecation-warning "Using old-style slot reader box_generator-srv:height-val is deprecated.  Use box_generator-srv:height instead.")
   (height m))
+
+(cl:ensure-generic-function 'poses-val :lambda-list '(m))
+(cl:defmethod poses-val ((m <SpawnBox-request>))
+  (roslisp-msg-protocol:msg-deprecation-warning "Using old-style slot reader box_generator-srv:poses-val is deprecated.  Use box_generator-srv:poses instead.")
+  (poses m))
 (cl:defmethod roslisp-msg-protocol:serialize ((msg <SpawnBox-request>) ostream)
   "Serializes a message object of type '<SpawnBox-request>"
   (cl:let ((__ros_arr_len (cl:length (cl:slot-value msg 'boxes_id))))
@@ -100,6 +110,13 @@
     (cl:write-byte (cl:ldb (cl:byte 8 8) bits) ostream)
     (cl:write-byte (cl:ldb (cl:byte 8 16) bits) ostream)
     (cl:write-byte (cl:ldb (cl:byte 8 24) bits) ostream))
+  (cl:let ((__ros_arr_len (cl:length (cl:slot-value msg 'poses))))
+    (cl:write-byte (cl:ldb (cl:byte 8 0) __ros_arr_len) ostream)
+    (cl:write-byte (cl:ldb (cl:byte 8 8) __ros_arr_len) ostream)
+    (cl:write-byte (cl:ldb (cl:byte 8 16) __ros_arr_len) ostream)
+    (cl:write-byte (cl:ldb (cl:byte 8 24) __ros_arr_len) ostream))
+  (cl:map cl:nil #'(cl:lambda (ele) (roslisp-msg-protocol:serialize ele ostream))
+   (cl:slot-value msg 'poses))
 )
 (cl:defmethod roslisp-msg-protocol:deserialize ((msg <SpawnBox-request>) istream)
   "Deserializes a message object of type '<SpawnBox-request>"
@@ -143,6 +160,16 @@
       (cl:setf (cl:ldb (cl:byte 8 16) bits) (cl:read-byte istream))
       (cl:setf (cl:ldb (cl:byte 8 24) bits) (cl:read-byte istream))
     (cl:setf (cl:slot-value msg 'height) (roslisp-utils:decode-single-float-bits bits)))
+  (cl:let ((__ros_arr_len 0))
+    (cl:setf (cl:ldb (cl:byte 8 0) __ros_arr_len) (cl:read-byte istream))
+    (cl:setf (cl:ldb (cl:byte 8 8) __ros_arr_len) (cl:read-byte istream))
+    (cl:setf (cl:ldb (cl:byte 8 16) __ros_arr_len) (cl:read-byte istream))
+    (cl:setf (cl:ldb (cl:byte 8 24) __ros_arr_len) (cl:read-byte istream))
+  (cl:setf (cl:slot-value msg 'poses) (cl:make-array __ros_arr_len))
+  (cl:let ((vals (cl:slot-value msg 'poses)))
+    (cl:dotimes (i __ros_arr_len)
+    (cl:setf (cl:aref vals i) (cl:make-instance 'geometry_msgs-msg:Pose))
+  (roslisp-msg-protocol:deserialize (cl:aref vals i) istream))))
   msg
 )
 (cl:defmethod roslisp-msg-protocol:ros-datatype ((msg (cl:eql '<SpawnBox-request>)))
@@ -153,16 +180,16 @@
   "box_generator/SpawnBoxRequest")
 (cl:defmethod roslisp-msg-protocol:md5sum ((type (cl:eql '<SpawnBox-request>)))
   "Returns md5sum for a message object of type '<SpawnBox-request>"
-  "45a1e59f6217c34ce24acbd9cc8ec4e3")
+  "48f94fb5a1b1f9bff04b2ea497ff928c")
 (cl:defmethod roslisp-msg-protocol:md5sum ((type (cl:eql 'SpawnBox-request)))
   "Returns md5sum for a message object of type 'SpawnBox-request"
-  "45a1e59f6217c34ce24acbd9cc8ec4e3")
+  "48f94fb5a1b1f9bff04b2ea497ff928c")
 (cl:defmethod roslisp-msg-protocol:message-definition ((type (cl:eql '<SpawnBox-request>)))
   "Returns full string definition for message of type '<SpawnBox-request>"
-  (cl:format cl:nil "string[] boxes_id~%float32 mass~%float32 length~%float32 width~%float32 height~%~%~%"))
+  (cl:format cl:nil "string[] boxes_id~%float32 mass~%float32 length~%float32 width~%float32 height~%geometry_msgs/Pose[] poses~%~%================================================================================~%MSG: geometry_msgs/Pose~%# A representation of pose in free space, composed of position and orientation. ~%Point position~%Quaternion orientation~%~%================================================================================~%MSG: geometry_msgs/Point~%# This contains the position of a point in free space~%float64 x~%float64 y~%float64 z~%~%================================================================================~%MSG: geometry_msgs/Quaternion~%# This represents an orientation in free space in quaternion form.~%~%float64 x~%float64 y~%float64 z~%float64 w~%~%~%"))
 (cl:defmethod roslisp-msg-protocol:message-definition ((type (cl:eql 'SpawnBox-request)))
   "Returns full string definition for message of type 'SpawnBox-request"
-  (cl:format cl:nil "string[] boxes_id~%float32 mass~%float32 length~%float32 width~%float32 height~%~%~%"))
+  (cl:format cl:nil "string[] boxes_id~%float32 mass~%float32 length~%float32 width~%float32 height~%geometry_msgs/Pose[] poses~%~%================================================================================~%MSG: geometry_msgs/Pose~%# A representation of pose in free space, composed of position and orientation. ~%Point position~%Quaternion orientation~%~%================================================================================~%MSG: geometry_msgs/Point~%# This contains the position of a point in free space~%float64 x~%float64 y~%float64 z~%~%================================================================================~%MSG: geometry_msgs/Quaternion~%# This represents an orientation in free space in quaternion form.~%~%float64 x~%float64 y~%float64 z~%float64 w~%~%~%"))
 (cl:defmethod roslisp-msg-protocol:serialization-length ((msg <SpawnBox-request>))
   (cl:+ 0
      4 (cl:reduce #'cl:+ (cl:slot-value msg 'boxes_id) :key #'(cl:lambda (ele) (cl:declare (cl:ignorable ele)) (cl:+ 4 (cl:length ele))))
@@ -170,6 +197,7 @@
      4
      4
      4
+     4 (cl:reduce #'cl:+ (cl:slot-value msg 'poses) :key #'(cl:lambda (ele) (cl:declare (cl:ignorable ele)) (cl:+ (roslisp-msg-protocol:serialization-length ele))))
 ))
 (cl:defmethod roslisp-msg-protocol:ros-message-to-list ((msg <SpawnBox-request>))
   "Converts a ROS message object to a list"
@@ -179,6 +207,7 @@
     (cl:cons ':length (length msg))
     (cl:cons ':width (width msg))
     (cl:cons ':height (height msg))
+    (cl:cons ':poses (poses msg))
 ))
 ;//! \htmlinclude SpawnBox-response.msg.html
 
@@ -243,10 +272,10 @@
   "box_generator/SpawnBoxResponse")
 (cl:defmethod roslisp-msg-protocol:md5sum ((type (cl:eql '<SpawnBox-response>)))
   "Returns md5sum for a message object of type '<SpawnBox-response>"
-  "45a1e59f6217c34ce24acbd9cc8ec4e3")
+  "48f94fb5a1b1f9bff04b2ea497ff928c")
 (cl:defmethod roslisp-msg-protocol:md5sum ((type (cl:eql 'SpawnBox-response)))
   "Returns md5sum for a message object of type 'SpawnBox-response"
-  "45a1e59f6217c34ce24acbd9cc8ec4e3")
+  "48f94fb5a1b1f9bff04b2ea497ff928c")
 (cl:defmethod roslisp-msg-protocol:message-definition ((type (cl:eql '<SpawnBox-response>)))
   "Returns full string definition for message of type '<SpawnBox-response>"
   (cl:format cl:nil "bool success~%string status_message~%~%~%~%"))

@@ -157,10 +157,10 @@
   "82214afe4ff077ebd4b8aa0c572e1255")
 (cl:defmethod roslisp-msg-protocol:message-definition ((type (cl:eql '<DeleteBox-response>)))
   "Returns full string definition for message of type '<DeleteBox-response>"
-  (cl:format cl:nil "bool success~%string message~%~%~%~%"))
+  (cl:format cl:nil "bool success~%string message~%~%~%"))
 (cl:defmethod roslisp-msg-protocol:message-definition ((type (cl:eql 'DeleteBox-response)))
   "Returns full string definition for message of type 'DeleteBox-response"
-  (cl:format cl:nil "bool success~%string message~%~%~%~%"))
+  (cl:format cl:nil "bool success~%string message~%~%~%"))
 (cl:defmethod roslisp-msg-protocol:serialization-length ((msg <DeleteBox-response>))
   (cl:+ 0
      1

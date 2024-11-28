@@ -1,0 +1,8 @@
+float32 max_speed_xy
+float32 max_vel_x
+float32 acc_lim_x
+float32 decel_lim_x
+float32 max_vel_theta
+---
+bool success
+string status_message

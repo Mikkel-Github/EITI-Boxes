@@ -40,7 +40,7 @@ template<>
 struct MD5Sum< ::box_generator::SpawnBox > {
   static const char* value()
   {
-    return "45a1e59f6217c34ce24acbd9cc8ec4e3";
+    return "48f94fb5a1b1f9bff04b2ea497ff928c";
   }
 
   static const char* value(const ::box_generator::SpawnBox&) { return value(); }

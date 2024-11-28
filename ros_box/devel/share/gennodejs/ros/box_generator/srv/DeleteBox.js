@@ -157,7 +157,6 @@ class DeleteBoxResponse {
     bool success
     string message
     
-    
     `;
   }
 

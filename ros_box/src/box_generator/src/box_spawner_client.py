@@ -77,45 +77,45 @@ def gazebo_callback(msg):
 
 
 
-# if __name__ == '__main__':
-#   # Setup
-#   rospy.init_node('box_spawner')
+if __name__ == '__main__':
+  # Setup
+  rospy.init_node('box_spawner')
 
-#   # Init Spawn and Delete Box Services:
-#   rospy.wait_for_service('spawn_box')
-#   spawn_box = rospy.ServiceProxy('spawn_box', SpawnBox)
-#   delete_box = rospy.ServiceProxy('delete_box', DeleteBox)
+  # Init Spawn and Delete Box Services:
+  rospy.wait_for_service('spawn_box')
+  spawn_box = rospy.ServiceProxy('spawn_box', SpawnBox)
+  delete_box = rospy.ServiceProxy('delete_box', DeleteBox)
 
 
 
-#   n_boxes = 3
+  n_boxes = 10
   
-#   # Generate boxes name:
-#   boxes_id = ["Box_"+str(i) for i in range(n_boxes)]
+  # Generate boxes name:
+  boxes_id = ["Box_"+str(i) for i in range(n_boxes)]
   
-#   # Spawn Boxes
-#   req = SpawnBoxRequest(
-#     boxes_id = boxes_id,
-#     mass = 5,
-#     length = 0.2,
-#     width = 0.2,
-#     height = 0.2
-#     )
+  # Spawn Boxes
+  req = SpawnBoxRequest(
+    boxes_id = boxes_id,
+    mass = 5,
+    length = 0.2,
+    width = 0.2,
+    height = 0.2
+    )
 
-#   spawn_box(req)
+  spawn_box(req)
 
-#   # Delete boxes:
-#   print('----> Hit enter to delete models.')
-#   a = input()
+  # Delete boxes:
+  print('----> Hit enter to delete models.')
+  a = input()
 
-#   req = DeleteBoxRequest(
-#      boxes_id = boxes_id
-#   )
-#   delete_box(req)
+  req = DeleteBoxRequest(
+     boxes_id = boxes_id
+  )
+  delete_box(req)
   
   
-#   print('----> Hit enter to reset the world.')
-#   a = input()
-#   reset_gazebo()
+  print('----> Hit enter to reset the world.')
+  a = input()
+  reset_gazebo()
 
     

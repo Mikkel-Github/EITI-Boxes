@@ -1,0 +1,71 @@
+<launch>
+    <!-- Start roscore -NOT NEEDED!!-
+    <node pkg="roslaunch" type="roscore" name="roscore" launch-prefix="gnome-terminal -x"/> -->
+
+    <!-- Run parameter update service -->
+    <node pkg="box_generator" 
+        type="param_service.py" 
+        name="parameter_update_service" 
+        launch-prefix="gnome-terminal -- bash -c"/>
+    
+    <!-- Run node to check falls -->
+    <node pkg="box_generator" 
+        type="box_spawner_service.py" 
+        name="box_spawner_service" 
+        launch-prefix="gnome-terminal -- bash -c "/>
+
+    <!-- Run node to check falls -->
+    <node pkg="box_generator" 
+        type="check_falls.py" 
+        name="check_falls" 
+        launch-prefix="gnome-terminal -- bash -c "/>
+    
+    <!-- Run node to check falls -->
+    <node pkg="box_generator" 
+        type="master.py" 
+        name="BoxIt_master" 
+        launch-prefix="gnome-terminal -- bash -c "/>
+
+
+    <!-- Launch Gazebo world -->
+    <include file="$(find mir_gazebo)/launch/mir_maze_world.launch" />
+
+
+    <!-- Unpause physics and set localization -->
+    <node pkg="rosservice" type="rosservice" name="unpause_gazebo" args="call /gazebo/unpause_physics" launch-prefix="gnome-terminal -x bash -c 'sleep 4; $0 $@; read'" />
+    
+    <!-- Start fake localization (needed for Navigation)-->
+    <include file="$(find mir_gazebo)/launch/fake_localization.launch">
+        <arg name="delta_x" value="-10.0" />
+        <arg name="delta_y" value="-10.0" />
+    </include>
+
+    <!-- Start Navigation -->
+    <group launch-prefix="gnome-terminal -x"> 
+        <include file="$(find mir_navigation)/launch/start_planner.launch">
+            <arg name="map_file" value="$(find mir_gazebo)/maps/maze.yaml" />
+            <arg name="virtual_walls_map_file" value="$(find mir_gazebo)/maps/maze_virtual_walls.yaml" />
+        </include>
+    </group>
+
+
+    <!-- Open RViz -->
+    <node pkg="rviz" type="rviz" name="rviz" args="-d $(find mir_navigation)/rviz/navigation.rviz" launch-prefix="gnome-terminal -x bash -c "/>
+    
+    
+    <!-- Set parameters for the robot 
+    <node pkg="rosservice" type="call" name="set_param" args="/set_param \"max_speed_xy: 1.55 max_vel_x: 0.99 acc_lim_x: 1.51 decel_lim_x: -1.51 max_vel_theta: 1.1\"" />
+    -->
+
+    <!-- Run route script 
+    <node pkg="box_generator" type="route.py" name="route" /> -->
+
+</launch>
+
+
+<!-- EXPLANATION OF LAUNCHER:
+
+gnome-terminal -x => Opens a new GNOME terminal and runs the specified command there
+
+
+-->

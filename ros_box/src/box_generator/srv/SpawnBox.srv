@@ -3,6 +3,7 @@ float32 mass
 float32 length
 float32 width
 float32 height
+geometry_msgs/Pose[] poses
 ---
 bool success
 string status_message

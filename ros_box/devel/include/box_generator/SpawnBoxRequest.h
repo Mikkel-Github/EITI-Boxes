@@ -15,6 +15,7 @@
 #include <ros/builtin_message_traits.h>
 #include <ros/message_operations.h>
 
+#include <geometry_msgs/Pose.h>
 
 namespace box_generator
 {
@@ -28,14 +29,16 @@ struct SpawnBoxRequest_
     , mass(0.0)
     , length(0.0)
     , width(0.0)
-    , height(0.0)  {
+    , height(0.0)
+    , poses()  {
     }
   SpawnBoxRequest_(const ContainerAllocator& _alloc)
     : boxes_id(_alloc)
     , mass(0.0)
     , length(0.0)
     , width(0.0)
-    , height(0.0)  {
+    , height(0.0)
+    , poses(_alloc)  {
   (void)_alloc;
     }
 
@@ -55,6 +58,9 @@ struct SpawnBoxRequest_
 
    typedef float _height_type;
   _height_type height;
+
+   typedef std::vector< ::geometry_msgs::Pose_<ContainerAllocator> , typename std::allocator_traits<ContainerAllocator>::template rebind_alloc< ::geometry_msgs::Pose_<ContainerAllocator> >> _poses_type;
+  _poses_type poses;
 
 
 
@@ -89,7 +95,8 @@ bool operator==(const ::box_generator::SpawnBoxRequest_<ContainerAllocator1> & l
     lhs.mass == rhs.mass &&
     lhs.length == rhs.length &&
     lhs.width == rhs.width &&
-    lhs.height == rhs.height;
+    lhs.height == rhs.height &&
+    lhs.poses == rhs.poses;
 }
 
 template<typename ContainerAllocator1, typename ContainerAllocator2>
@@ -146,12 +153,12 @@ struct MD5Sum< ::box_generator::SpawnBoxRequest_<ContainerAllocator> >
 {
   static const char* value()
   {
-    return "5447832cd5e8c8500cebb7f2a031fce0";
+    return "67d3c2928f43e293c6d4a5e1abeb127d";
   }
 
   static const char* value(const ::box_generator::SpawnBoxRequest_<ContainerAllocator>&) { return value(); }
-  static const uint64_t static_value1 = 0x5447832cd5e8c850ULL;
-  static const uint64_t static_value2 = 0x0cebb7f2a031fce0ULL;
+  static const uint64_t static_value1 = 0x67d3c2928f43e293ULL;
+  static const uint64_t static_value2 = 0xc6d4a5e1abeb127dULL;
 };
 
 template<class ContainerAllocator>
@@ -175,6 +182,29 @@ struct Definition< ::box_generator::SpawnBoxRequest_<ContainerAllocator> >
 "float32 length\n"
 "float32 width\n"
 "float32 height\n"
+"geometry_msgs/Pose[] poses\n"
+"\n"
+"================================================================================\n"
+"MSG: geometry_msgs/Pose\n"
+"# A representation of pose in free space, composed of position and orientation. \n"
+"Point position\n"
+"Quaternion orientation\n"
+"\n"
+"================================================================================\n"
+"MSG: geometry_msgs/Point\n"
+"# This contains the position of a point in free space\n"
+"float64 x\n"
+"float64 y\n"
+"float64 z\n"
+"\n"
+"================================================================================\n"
+"MSG: geometry_msgs/Quaternion\n"
+"# This represents an orientation in free space in quaternion form.\n"
+"\n"
+"float64 x\n"
+"float64 y\n"
+"float64 z\n"
+"float64 w\n"
 ;
   }
 
@@ -198,6 +228,7 @@ namespace serialization
       stream.next(m.length);
       stream.next(m.width);
       stream.next(m.height);
+      stream.next(m.poses);
     }
 
     ROS_DECLARE_ALLINONE_SERIALIZER
@@ -230,6 +261,14 @@ struct Printer< ::box_generator::SpawnBoxRequest_<ContainerAllocator> >
     Printer<float>::stream(s, indent + "  ", v.width);
     s << indent << "height: ";
     Printer<float>::stream(s, indent + "  ", v.height);
+    s << indent << "poses[]" << std::endl;
+    for (size_t i = 0; i < v.poses.size(); ++i)
+    {
+      s << indent << "  poses[" << i << "]: ";
+      s << std::endl;
+      s << indent;
+      Printer< ::geometry_msgs::Pose_<ContainerAllocator> >::stream(s, indent + "    ", v.poses[i]);
+    }
   }
 };
 

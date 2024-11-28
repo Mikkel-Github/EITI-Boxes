@@ -1,0 +1,29 @@
+<launch>
+
+    <!-- Run parameter update service -->
+    <node pkg="box_generator" 
+        type="param_service.py" 
+        name="parameter_update_service" 
+        launch-prefix="gnome-terminal -- bash -c"/>
+
+    <!-- Run node to check falls -->
+    <node pkg="box_generator" 
+        type="check_falls.py" 
+        name="check_falls" 
+        launch-prefix="gnome-terminal -- bash -c "/>
+
+    <!-- Run node to check falls -->
+    <node pkg="box_generator" 
+        type="master.py" 
+        name="BoxIt_master" 
+        launch-prefix="gnome-terminal -- bash -c "/>
+
+</launch>
+
+
+<!-- EXPLANATION OF LAUNCHER:
+
+gnome-terminal -x => Opens a new GNOME terminal and runs the specified command there
+
+
+-->
