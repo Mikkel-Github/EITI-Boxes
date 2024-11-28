@@ -106,7 +106,6 @@ def get_standard_orientations(width, length, height):
 
     return orientation_dict
 
-
 ############# SERVICE: PLACE BOXES ####################
 
 def place_boxes_service(req):    
@@ -116,7 +115,7 @@ def place_boxes_service(req):
     width = req.width
     height = req.height
 
-    orientation_list = generate_orientations(length, width, height)
+    orientation_list = get_all_orientations(length, width, height)
 
     for orientation in orientation_list:
         compute_configuration()
