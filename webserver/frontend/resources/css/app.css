@@ -1,3 +1,97 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.Primary {
+    color: #e9b66f;
+}
+
+.vr {
+    border-left: 2px solid #7a5c30;
+}
+
+input {
+    max-height: 42px;
+    min-width: 200px;
+}
+
+select {
+    min-width: 200px;
+}
+
+h1 {
+    font-size: 24pt;
+    font-weight: 700;
+}
+
+h2 {
+    font-size: 16pt;
+    font-weight: 700;
+}
+
+hr {
+    margin-top: 1.0rem;
+    margin-bottom: 0.6rem;
+}
+
+.Outer {
+    @apply px-8 py-0
+}
+
+.btn {
+    @apply font-bold py-2 px-4 rounded;
+}
+
+.btn-primary {
+    background-color: #e9b66f;
+    color: #212121;
+    transition: background-color 0.2s;
+}
+
+.btn-primary:hover {
+    background-color: #b58848;
+}
+
+.btn-red {
+    @apply bg-red-500 text-white;
+}
+
+.btn-red:hover {
+    @apply bg-red-700;
+}
+
+.Row {
+    display: flex;
+    gap: .4rem;
+}
+
+.Column {
+    display: flex;
+    flex-direction: column;
+    gap: .4rem;
+}
+
+.H-Center {
+    align-items: center;
+}
+
+.V-Center {
+    align-items: center;
+    justify-content: center
+}
+
+.Flex {
+    flex: 1;
+}
+
+.Simulation-Setup-Container {}
+
+.Box-Specification-Container {}
+
+.Input-Field-Container {}
+
+.Dimensions-Field-Container {}
+
+.InvalidInputField {
+    border-color: red !important;
+}

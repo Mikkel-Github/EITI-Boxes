@@ -11,7 +11,7 @@ import Header from '../Components/BoxItComponents/Header.vue';
             <Header />
 
             <div class="Outer">
-                <h1 >Transportation Setup</h1>
+                <h1>Current Report Feed</h1>
                 <br>
                 <div class="Simulation-Setup-Container Row">
                     <!-- 3D view -->
@@ -54,9 +54,7 @@ export default {
     },
     methods: {
         publishMessage() {
-            let payload = {n_boxes: this.amount, mass: this.mass, height: this.dimensions.height, width: this.dimensions.width, lenght: this.dimensions.length}
             // mqttService.publish('box_spawner/spawn',JSON.stringify(payload));
-            this.running_simulations = true;
         },
         stopSimulating() {
             // mqttService.publish('box_spawner/stop');

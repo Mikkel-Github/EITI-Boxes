@@ -1,17 +1,17 @@
 <template>
-    <div class="Row Flex" style="margin-bottom: 3rem; background-color: #212121; gap: 0;">
+    <div class="Row Flex" style="margin-bottom: 3rem; background-color: #212121; gap: 0; border-bottom: 2px solid #e9b66f;">
         <div class="Column">
             <img src="../../../images/logo.png" style="max-width: 6rem; height: auto;" />
         </div>
-        <div class="Column Flex" style="border-bottom: 2px solid #e9b66f;">
+        <div class="Column Flex">
             <div class="Column Flex">
             </div>
             <div class="Row" style="padding: 2rem; padding-bottom: 0.4rem; padding-top: 0.4rem; gap: 2rem; background-color: #212121;">
-                <button class="Header-Btn">Transportation Setup</button>
+                <a class="Header-Btn" href="/transportation">Transportation Setup</a>
                 <span class="vr" />
                 <button class="Header-Btn">Current Setup</button>
                 <span class="vr" />
-                <button class="Header-Btn">Reports</button>
+                <a class="Header-Btn" href="/browse-reports" >Reports</a>
 
                 <div class="Row Flex" />
 
