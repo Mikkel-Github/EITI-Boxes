@@ -50,44 +50,61 @@ class CellCage():
         occupation_matrix = np.zeros((self.matrix_width, self.matrix_length, self.matrix_height), dtype=bool)
         # TODO: Recursive function to explore all possible configurations starting from the center
 
-def generate_orientations(a,b,c):
-    orientation_list = []
+def get_all_orientations(width, length, height):
+    orientation_dict = {}
 
-    # Case when a = b = c (cube) - only one orientation
-    if a == b == c:
-        orientation_list = [Orientation(width=a, length=b, height=c)]  # Only one configuration for a cube
+    # Case when all dimensions are equal
+    if width == length == height:
+        orientation_dict["orientation_1"] = Orientation(width=width, length=length, height=height)  # Only one configuration for a cube
     
-    # Case when a = b != c or a != b = c (some dimensions are equal)
-    elif a == b:
-        orientation_list = [
-            Orientation(width=a, length=b, height=c),  # Only one orientation for this surface
-            Orientation(width=a, length=c, height=b),  # Two orientations for the other surfaces
-            Orientation(width=c, length=a, height=b)
-        ]  
+    # Case when 2 dimensions are equal
+    elif width == length:
+        orientation_dict["orientation_1"] = Orientation(width=width, length=length, height=height)
+        orientation_dict["orientation_2"] = Orientation(width=width, length=height, height=length)
+        orientation_dict["orientation_3"] = Orientation(width=height, length=width, height=length)
 
-    elif b == c:
-        orientation_list = [
-            Orientation(width=b, length=c, height=a),  # Only one orientation for this surface
-            Orientation(width=a, length=b, height=c),  # Two orientations for the other surfaces
-            Orientation(width=b, length=a, height=c)
-        ]  
+    elif length == height:
+        orientation_dict["orientation_1"] = Orientation(width=width, length=length, height=height)
+        orientation_dict["orientation_2"] = Orientation(width=length, length=height, height=width)
+        orientation_dict["orientation_3"] =Orientation(width=height, length=width, height=length)
+
+    elif width == height:
+        orientation_dict["orientation_1"] = Orientation(width=width, length=length, height=height)
+        orientation_dict["orientation_2"] = Orientation(width=length, length=width, height=height)
+        orientation_dict["orientation_3"] = Orientation(width=height, length=width, height=length)
     
-    # General case when a != b != c (all dimensions are different)
+    # General case when all dimensions are different
     else:
-        orientation_list = [
-            Orientation(width=a, length=b, height=c), Orientation(width=b, length=a, height=c),  # Orientations for (a, b)
-            Orientation(width=a, length=c, height=b), Orientation(width=c, length=a, height=b),  # Orientations for (a, c)
-            Orientation(width=b, length=c, height=a), Orientation(width=c, length=b, height=a)   # Orientations for (b, c)
-        ]
+        orientation_dict["orientation_1"] = Orientation(width=width, length=length, height=height)
+        orientation_dict["orientation_2"] = Orientation(width=width, length=height, height=length)
+        orientation_dict["orientation_3"] = Orientation(width=length, length=width, height=height)
+        orientation_dict["orientation_4"] = Orientation(width=length, length=height, height=width)
+        orientation_dict["orientation_5"] = Orientation(width=height, length=width, height=length)
+        orientation_dict["orientation_6"] = Orientation(width=height, length=length, height=width)
 
     # Check constrains:
-    for item in orientation_list:
-        if item.width > MAX_WIDTH or item.legth > MAX_LENGHT or item.height > MAX_HEIGHT:
-            orientation_list.remove(item)
+    orientation_dict = {
+        key: orient for key, orient in orientation_dict.items()
+        if orient.width <= MAX_WIDTH and orient.length <= MAX_LENGHT and orient.height <= MAX_HEIGHT
+    }
 
-    return orientation_list
+    return orientation_dict
 
+def get_standard_orientations(width, length, height):
+    orientation_dict = []
 
+    if width == length:
+        orientation_dict["standard_orientation_1"] = Orientation(width=width, length=length, height=height)
+    else:
+        orientation_dict["standard_orientation_1"] = Orientation(width=width, length=length, height=height)
+        orientation_dict["standard_orientation_2"] = Orientation(width=length, length=width, height=height)
+
+    orientation_dict = {
+        key: orient for key, orient in orientation_dict.items()
+        if orient.width <= MAX_WIDTH and orient.length <= MAX_LENGHT and orient.height <= MAX_HEIGHT
+    }
+
+    return orientation_dict
 
 ############# SERVICE: PLACE BOXES ####################
 
@@ -98,7 +115,7 @@ def place_boxes_service(req):
     width = req.width
     height = req.height
 
-    orientation_list = generate_orientations(length, width, height)
+    orientation_list = get_all_orientations(length, width, height)
 
     for orientation in orientation_list:
         compute_configuration()
