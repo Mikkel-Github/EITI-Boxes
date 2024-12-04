@@ -4,7 +4,7 @@ Call the different Ros Services. Initialize and set parameters to Gazebo.
 """
 
 import rospy
-from box_generator.srv import SpawnBox, SpawnBoxRequest, SetParam, SetParamRequest, DeleteBox, DeleteBoxRequest, MqttListener, MqttListenerRequest
+from box_generator.srv import SpawnBox, SpawnBoxRequest, SetParam, SetParamRequest, DeleteBox, DeleteBoxRequest, WaypointSender, WaypointSenderRequest
 from move_base_msgs.msg import MoveBaseAction, MoveBaseGoal
 from actionlib_msgs.msg import GoalStatus
 import actionlib
@@ -76,14 +76,18 @@ class BoxIT_Manager:
         ]
         self.ref_time = None
 
+        self.obj = MikelObj()
+
     @property
     def is_ready(self):
+       # TODO: self.optimizator.is_ready()
        return self.mqtt_params != None
     
     def run(self):
         # Run first empty trial- max score:
         self.first_tune()
 
+        
         # Start the main loop in a separate thread
         self.main_loop_thread = threading.Thread(target=self.main_loop)
         self.main_loop_thread.daemon = True
@@ -123,6 +127,8 @@ class BoxIT_Manager:
 
         if(str(msg.topic) == "box_spawner/spawn"):
             self.mqtt_params = payload
+            # TODO: Generate layout()
+            # self.optizimer.get_layout()
         else:
             print('Not matching topic!')
     
@@ -170,14 +176,14 @@ class BoxIT_Manager:
     def get_gazebo_time(self):
         return self.gazebo_time
     
-    def spawn_boxes(self, args):
+    def spawn_boxes(self, layout):
         rospy.wait_for_service('spawn_box')
 
         try:
             spawn_box = rospy.ServiceProxy('spawn_box', SpawnBox)
 
             # Generate boxes name:
-            self.boxes_id = ["Box_"+str(i) for i in range(args['n_boxes'])]
+            self.boxes_id = ["Box_"+str(i) for i in range(len(layout.position))]
 
             # Spawn Boxes
             req = SpawnBoxRequest(
@@ -215,26 +221,7 @@ class BoxIT_Manager:
         except rospy.ServiceException as e:
             rospy.logerr(f"Error calling Gazebo delete model service: {e}")
 
-    def send_goal(self, goal_position, goal_orientation):
-        goal = MoveBaseGoal()
-        goal.target_pose.header.frame_id = "map"
-        goal.target_pose.header.stamp = rospy.Time.now()
 
-        goal.target_pose.pose.position.x = goal_position['x']
-        goal.target_pose.pose.position.y = goal_position['y']
-        goal.target_pose.pose.position.z = goal_position['z']
-
-        goal.target_pose.pose.orientation.x = goal_orientation['x']
-        goal.target_pose.pose.orientation.y = goal_orientation['y']
-        goal.target_pose.pose.orientation.z = goal_orientation['z']
-        goal.target_pose.pose.orientation.w = goal_orientation['w']
-
-        rospy.loginfo("Sending goal: position=({}, {}, {}), orientation=({}, {}, {}, {})".format(
-            goal_position['x'], goal_position['y'], goal_position['z'],
-            goal_orientation['x'], goal_orientation['y'], goal_orientation['z'], goal_orientation['w']
-        ))
-
-        self.arm_client.send_goal(goal)
         # self.arm_client.wait_for_result()
 
         # # Return True if the goal was reached
@@ -246,31 +233,32 @@ class BoxIT_Manager:
         #     return False
     
     ############### BOX IT! UTILS #############################
-    def navigation_routine(self):
-        """
-        This function sends a sequence of navigation goals to a robot.
-        Output reward of trial in form of simulation time.
-        """
 
+    def navigation_routine(self):
+        
+        # Threading events
+        stop = threading.Event()
+        done = threading.Event()
+        
+        # Init time:
         start_time = self.get_gazebo_time()
         end_time = None
         sucess = True
-        for goal_data in self.goal_list:
-            position = goal_data['position']
-            orientation = goal_data['orientation']
 
-            self.send_goal(position, orientation)
+        # Start the main loop in a separate thread
+        self.nav_thread = threading.Thread(target=self.send_waypoints,args=(stop,done))
+        self.nav_thread.daemon = True
+        self.nav_thread.start()
 
-            while self.arm_client.get_state() != GoalStatus.SUCCEEDED:
+        while done.is_set() == False:
 
-                if self.fail_flag:
-                    end_time = self.get_gazebo_time()
-                    sucess = False
-                    break 
-                
-                time.sleep(0.1)
+            if self.fail_flag:
+                stop.set()
+                end_time = self.get_gazebo_time()
+                sucess = False
+                break 
             
-            if end_time != None: break
+            time.sleep(0.1)
         
         # If sucess assign last ros time
         if sucess:
@@ -279,12 +267,44 @@ class BoxIT_Manager:
         else:
             rospy.loginfo("Failed trial.")
         
-        trial_time = end_time - start_time
+        trialtime = end_time - start_time
 
-        score = self.compute_score(trial_time)
+        return sucess, trialtime
+    
+    
+    def send_waypoints(self,args):
+        """
+        This function sends a sequence of navigation goals to a robot.
+        Output reward of trial in form of simulation time.
+        """
 
-        return sucess, score
+        rospy.wait_for_service('router')
 
+        try:
+            send_waypoint = rospy.ServiceProxy('router', WaypointSender)
+
+           
+            for goal_data in self.goal_list:
+                if args.stop.is_set() == False:
+                    position = goal_data['position']
+                    orientation = goal_data['orientation']
+
+                    # Spawn Boxes
+                    req = WaypointSenderRequest(
+                    position_x = goal_data['position']['x'],
+                    position_y = goal_data['position']['y'],
+                    position_z = goal_data['position']['z'],
+                    orientation_x = goal_data['orientation']['x'],
+                    orientation_y = goal_data['orientation']['y'],
+                    orientation_z = goal_data['orientation']['z'],
+                    orientation_w = goal_data['orientation']['w']
+                    )
+
+                    send_waypoint(req)    # Locking process              
+            
+        except rospy.ServiceException as e:
+            print("Error - couldn't get spawn_box service: %s" % e)    
+        
   
     #################### MAIN LOOP #####################
 
@@ -301,17 +321,22 @@ class BoxIT_Manager:
         
     def main_loop(self):
         while rospy.is_shutdown:
-            if not self.is_ready:
-                self.mqtt_params = dict()
-                self.mqtt_params['n_boxes'] = 6
-                self.mqtt_params['mass'] = 0.5
-                self.mqtt_params['lenght'] = 0.2
-                self.mqtt_params['width'] = 0.2
-                self.mqtt_params['height'] = 0.2
+            # if not self.is_ready:
+            #     self.mqtt_params = dict()
+            #     self.mqtt_params['n_boxes'] = 6
+            #     self.mqtt_params['mass'] = 0.5
+            #     self.mqtt_params['lenght'] = 0.2
+            #     self.mqtt_params['width'] = 0.2
+            #     self.mqtt_params['height'] = 0.2
             
             if self.is_ready:
+ 
                 user_params = self.get_user_param()
 
+
+                # TODO: 
+                layout = self.optimizator.get_next_layout()
+                
                 # TODO: Compute orientations
                 # TODO: Compute posible poses
         
@@ -324,7 +349,7 @@ class BoxIT_Manager:
                 self.set_param(mir_params)
             
                 rospy.loginfo(f"Spawning boxes...")
-                self.spawn_boxes(box_param)
+                self.spawn_boxes(layout)
                 time.sleep(0.2)
                
                 # Navigation - simulation trial
@@ -335,8 +360,9 @@ class BoxIT_Manager:
                 self.reset_gazebo()
                 self.delete_model()
                 
-
-                time.sleep(1)
+                self.optimizator.set_score(current_layout = layout, score = (sucess, trial_time))
+                layout.set_score 
+            time.sleep(1)
 
     
     def first_run(self):
@@ -355,7 +381,7 @@ class BoxIT_Manager:
         # Set robot params
         rospy.loginfo(f"Set max robot parameters")
         self.set_param(mir_params)
-        _, score = self.navigation_routine()
+        _, trrial_time = self.navigation_routine()
         
 
         rospy.loginfo(f"Reference score saved!")

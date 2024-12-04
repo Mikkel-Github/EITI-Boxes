@@ -23,11 +23,11 @@ def handle_set_param(req):
         client.update_configuration(new_config)
 
         rospy.loginfo("Updated parameters: %s", new_config)
-        return SetParamResponse(success=True, message="Robotsim Parameters updated successfully.")
+        return SetParamResponse(success=True, status_message="Robotsim Parameters updated successfully.")
 
     except Exception as e:
         rospy.logerr("Failed to update parameters: %s", str(e))
-        return SetParamResponse(success=False, message="Failed to update robotsim parameters.")
+        return SetParamResponse(success=False, status_message="Failed to update robotsim parameters.")
 
 # Main function to initialize the ROS service node
 if __name__ == "__main__":

@@ -61,6 +61,7 @@ add_service_files(
    SpawnBox.srv
    DeleteBox.srv
    SetParam.srv
+   WaypointSender.srv
  )
 
 ## Generate actions in the 'action' folder
@@ -172,11 +173,13 @@ include_directories(
 catkin_install_python(PROGRAMS
    src/box_spawner.py
    src/box_spawner_service.py
-   src/box_spawner_client.py
+   src/box_client_debug.py
    src/master.py
    src/check_falls.py
    src/param_service.py
    src/statistic_test_main.py
+   src/route_service.py
+   src/route.py
    DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
  )
 

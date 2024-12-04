@@ -13,4 +13,6 @@
     (:file "_package_SetParam" :depends-on ("_package"))
     (:file "SpawnBox" :depends-on ("_package_SpawnBox"))
     (:file "_package_SpawnBox" :depends-on ("_package"))
+    (:file "WaypointSender" :depends-on ("_package_WaypointSender"))
+    (:file "_package_WaypointSender" :depends-on ("_package"))
   ))
