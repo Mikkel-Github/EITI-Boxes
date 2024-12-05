@@ -1,5 +1,5 @@
 <template>
-    <div class="Row Flex" style="margin-bottom: 3rem; background-color: #212121; gap: 0; border-bottom: 2px solid #e9b66f;">
+    <div class="Row" style="margin-bottom: 1rem; background-color: #212121; gap: 0; border-bottom: 2px solid #e9b66f;">
         <div class="Column">
             <img src="../../../images/logo.png" style="max-width: 6rem; height: auto;" />
         </div>

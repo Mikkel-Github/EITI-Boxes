@@ -26,5 +26,6 @@ class MqttService {
     }
 }
 
-export default new MqttService('ws://ec2-16-16-27-107.eu-north-1.compute.amazonaws.com:8080'); // Update with your broker URL
+// export default new MqttService('ws://ec2-16-16-27-107.eu-north-1.compute.amazonaws.com:8080'); // Update with your broker URL
+export default new MqttService('ws://test.mosquitto.org:1883'); // Update with your broker URL
 

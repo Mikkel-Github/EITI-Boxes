@@ -6,7 +6,7 @@ import Header from '../Components/BoxItComponents/Header.vue';
 </script>
 
 <template>
-    <div class="" style="width: 100vw; height: 120vh;">
+    <div class="" style="width: 100vw; height: 100vh;">
         <div class="Column">
             <Header />
 

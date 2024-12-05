@@ -69,6 +69,7 @@ hr {
     display: flex;
     flex-direction: column;
     gap: .4rem;
+    height: 100%;
 }
 
 .H-Center {
@@ -84,6 +85,16 @@ hr {
     flex: 1;
 }
 
+.Button {
+    color: white;
+    font-weight: bold;
+    padding: 20px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    background-color: #038cfc;
+    border-radius: 10px;
+}
+
 .Simulation-Setup-Container {}
 
 .Box-Specification-Container {}
@@ -94,4 +105,28 @@ hr {
 
 .InvalidInputField {
     border-color: red !important;
+}
+
+.drop-enter-active {
+    animation: drop-in 0.5s ease-out;
+}
+
+.drop-leave-active {
+    animation: drop-in 0.5s ease-out reverse;
+}
+
+@keyframes drop-in {
+    0% {
+        opacity: 0;
+        transform: translateY(-50px);
+    }
+
+    70% {
+        transform: translateY(0px);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translateY(0px);
+    }
 }
