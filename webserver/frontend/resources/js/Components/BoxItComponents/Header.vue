@@ -9,8 +9,6 @@
             <div class="Row" style="padding: 2rem; padding-bottom: 0.4rem; padding-top: 0.4rem; gap: 2rem; background-color: #212121;">
                 <a class="Header-Btn" href="/transportation">Transportation Setup</a>
                 <span class="vr" />
-                <button class="Header-Btn">Current Setup</button>
-                <span class="vr" />
                 <a class="Header-Btn" href="/browse-reports" >Reports</a>
 
                 <div class="Row Flex" />

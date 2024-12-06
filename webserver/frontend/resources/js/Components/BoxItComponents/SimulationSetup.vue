@@ -13,17 +13,17 @@ import FileUpload from './FileUpload.vue'
                 <!-- Height -->
                 <div class="Input-Field-Container Column">
                     <span>Height (cm)</span>
-                    <input v-model="dimensions.height" placeholder="10" @blur="UpdateSize">
+                    <input v-model="dimensions.height" placeholder="10" type="number" @input="UpdateSettings" @blur="UpdateSize">
                 </div>
                 <!-- Width -->
                 <div class="Input-Field-Container Column">
                     <span>Width (cm)</span>
-                    <input v-model="dimensions.width" placeholder="20" @blur="UpdateSize">
+                    <input v-model="dimensions.width" placeholder="20" type="number" @input="UpdateSettings" @blur="UpdateSize">
                 </div>
                 <!-- Depth -->
                 <div class="Input-Field-Container Column">
                     <span>Length (cm)</span>
-                    <input v-model="dimensions.length" placeholder="40" @blur="UpdateSize">
+                    <input v-model="dimensions.length" placeholder="40" type="number" @input="UpdateSettings" @blur="UpdateSize">
                 </div>
             </div>
             <div class="Column">
@@ -31,14 +31,14 @@ import FileUpload from './FileUpload.vue'
                 <div class="Input-Field-Container Column">
                     <span>Mass of one box (g)</span>
                     <div class="Row">
-                        <input v-model="mass" placeholder="350">
+                        <input v-model="mass" placeholder="350" type="number" @input="UpdateSettings">
                     </div>
                 </div>
                 <!-- Amount -->
                 <div class="Input-Field-Container Column">
                     <span>Amount of boxes</span>
                     <div class="Row">
-                        <input v-model="amount" placeholder="200">
+                        <input v-model="amount" placeholder="200" type="number" @input="UpdateSettings">
                     </div>
                 </div>
                 <!-- Fragile -->
@@ -48,7 +48,7 @@ import FileUpload from './FileUpload.vue'
                         <p v-if="fragile" style="margin-left: 0.5rem; color: red">Boxes will NOT be rotated but keep their initial orientation!</p>
                     </div>
                     <div class="Row Flex" >
-                        <input v-model="fragile" type="checkbox" style="color: red; height: 100%;">
+                        <input v-model="fragile" type="checkbox" style="color: red; height: 100%;" @input="UpdateSettings" >
                     </div>
                 </div>
             </div>
@@ -113,12 +113,15 @@ export default {
     },
     methods: {
         UpdateSize() {
-            const capture = { height: this.dimensions.height, width: this.dimensions.width, length: this.dimensions.length }
+            const capture = { height: Number(this.dimensions.height), width: Number(this.dimensions.width), length: Number(this.dimensions.length) }
             if(capture.height == '' || capture.width == '' || capture.length == '') { return }
-            this.$emit('update:modelValue', capture); // Emit the standard v-model update event
+            // this.$emit('update:modelValue', capture); // Emit the standard v-model update event
+        },
+        UpdateSettings() {
+            console.log("UpdateSettings")
+            this.$emit('settingsUpdated', { dimensions: this.dimensions, mass: this.mass, amount: this.amount, fragile: this.fragile })
         },
         OpenMapCreator() {
-            console.log("OpenMapCreator")
             this.$emit('toggleMap');
         }
     },

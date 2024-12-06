@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import RenderView from '../Components/BoxItComponents/RenderView.vue';
 import SimulationSetup from '../Components/BoxItComponents/SimulationSetup.vue';
-import SimulationFeed from '../Components/BoxItComponents/SimulationFeed.vue';
 import Header from '../Components/BoxItComponents/Header.vue';
 import FileUpload from '../Components/BoxItComponents/FileUpload.vue';
 </script>
@@ -18,16 +17,11 @@ import FileUpload from '../Components/BoxItComponents/FileUpload.vue';
                     <!-- 3D view -->
                     <RenderView :scale="dimensions" />
                     <!-- Box specifications -->
-                    <SimulationSetup v-if="!running_simulations" v-model="dimensions" @toggleMap="toggleMap" />
-                    <!-- Live simulation feedback -->
-                    <SimulationFeed v-else />
+                    <SimulationSetup @settingsUpdated="updateSettings" @toggleMap="toggleMap" />
                 </div>
 
-                <div v-if="!running_simulations" class="Row V-Center" style="margin-top: 1rem; margin-bottom: 1rem;">
-                    <button class="btn btn-primary" @click="publishMessage">Start</button>
-                </div>
-                <div v-if="running_simulations" class="Row V-Center" style="margin-top: 1rem; margin-bottom: 1rem;">
-                    <button class="btn btn-red" @click="stopSimulating">Stop Simulating</button>
+                <div class="Row V-Center" style="margin-top: 1rem; margin-bottom: 1rem;">
+                    <button class="btn btn-primary" @click="StartSimulation">Start</button>
                 </div>
             </div>
         </div>
@@ -39,12 +33,13 @@ import FileUpload from '../Components/BoxItComponents/FileUpload.vue';
 </style>
 
 <script lang="ts">
+import { Inertia } from '@inertiajs/inertia';
+
 import mqttService from '@/services/MqttService';
 
 export default {
     data() {
         return {
-            running_simulations: false,
             mass: 0,
             amount: 0,
             dimensions: {height: 10, width: 10, length: 10},
@@ -56,25 +51,47 @@ export default {
     computed: {
     },
     methods: {
+        updateSettings(data) {
+            this.mass = data.mass
+            this.amount = data.amount
+            console.log("This data")
+            console.log(this.mass)
+            console.log(this.amount)
+
+            const new_dimensions = { height: this.dimensions.height, width: this.dimensions.width, length: this.dimensions.length }
+
+            if(data.dimensions.height != '') new_dimensions.height = data.dimensions.height
+            if(data.dimensions.width != '') new_dimensions.width = data.dimensions.width
+            if(data.dimensions.length != '') new_dimensions.length = data.dimensions.length
+
+            this.dimensions = new_dimensions
+
+            console.log(this.dimensions)
+        },
         toggleMap(data) {
             console.log("toggleMap")
             this.map_creator_open = !this.map_creator_open
         },
-        publishMessage() {
-            let payload = {n_boxes: this.amount, mass: this.mass, height: this.dimensions.height, width: this.dimensions.width, lenght: this.dimensions.length}
-            // mqttService.publish('box_spawner/spawn',JSON.stringify(payload));
-            this.running_simulations = true;
+        StartSimulation() {
+            let payload = {n_boxes: this.amount, mass: this.mass, height: this.dimensions.height, width: this.dimensions.width, length: this.dimensions.length}
+            mqttService.publish('box_placement/generate_setup', JSON.stringify(payload));
         },
         stopSimulating() {
             // mqttService.publish('box_spawner/stop');
         },
     },
     mounted() {
-        mqttService.subscribe('your/topic', (message) => {
-            console.log('Received message:', message);
-        });
-        mqttService.subscribe('mikkl20/box_spawner/spawn', (message) => {
-            console.log('Received message:', message);
+        mqttService.subscribe('website/showlivesim', (topic, message) => {
+            if(topic != 'website/showlivesim') return
+
+            console.log('Received message on topic website/showlivesim:', message);
+
+            const data = JSON.parse(message.toString())
+            console.log(data)
+            console.log(typeof data)
+            if(!data.hasOwnProperty('id') || data.id == '' || !data.hasOwnProperty('generated_orientations') || data.generated_orientations == '') return
+
+            Inertia.visit(`/simulation/${data.id}/${data.generated_orientations}`);
         });
     },
     beforeUnmount() {

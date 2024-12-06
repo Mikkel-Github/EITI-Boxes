@@ -1,6 +1,6 @@
 <template>
     <div class="" style="width: 100vw; height: 100vh;">
-        <div class="Column" style="background-color: #212121; border-bottom: 2px solid #e9b66f; height: auto;">
+        <div class="Column" style="background-color: #212121; border-bottom: 2px solid #e9b66f; height: 97px; width: 100%; position: absolute;">
             <img src="../../images/logo.png" style="max-width: 6rem; height: auto;" />
         </div>
         <div class="Column H-Center">

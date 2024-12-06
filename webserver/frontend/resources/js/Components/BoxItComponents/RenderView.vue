@@ -123,7 +123,9 @@ export default {
     watch: {
         scale: {
             handler(newScale: { height: Number, width: Number, length: Number }) {
-                this.initialWidth = this.interpolatedScale;
+                console.log(`new scale: (${newScale.height}, ${newScale.width}, ${newScale.length})`)
+                this.initialScale = this.interpolatedScale;
+                console.log(`initialScale: (${this.initialScale.height}, ${this.initialScale.width}, ${this.initialScale.length})`)
                 this.interpolateScale(newScale);
             },
             immediate: true, // Trigger interpolation on first render

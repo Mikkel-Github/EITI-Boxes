@@ -1,6 +1,10 @@
 import math
 import uuid
 
+from mock_simulator import mock_simulator
+
+from mqtt_publisher import announce_best_run, announce_orientation_evaluation
+
 class Orientation:
     width: float
     length: float
@@ -34,12 +38,37 @@ class RobotSettings:
         self.velocity = velocity
         self.velocity_theta = velocity_theta
 
-    def lower_values(self):
+    def lower_values(self) -> bool:
         self.acceleration -= 0.1
         self.deacceleration -= 0.1
-        self.speed -= 0.1
         self.velocity -= 0.1
         self.velocity_theta -= 0.1
+
+        if self.acceleration < 0.8:
+            return False
+        return True
+
+class Result:
+    def __init__(self, success, time, boxes):
+        self.success = success
+        self.time = time
+        self.boxes = boxes
+        self.score = self.calculate_score()
+
+    def calculate_score(self) -> int:
+        if self.success is False:
+            return -1
+        
+        # more boxes moved gives higher score, higher time gives lower score
+        result = self.boxes - self.time
+
+        if result < 0:
+            result = 0
+
+        return result
+    
+    def get_score(self) -> int:
+        return self.score
 
 class Layout:
     def __init__(self, positions, orientation, mass, robot_settings: RobotSettings):
@@ -49,7 +78,18 @@ class Layout:
         self.orientation = orientation
         self.mass = mass
         self.robot_settings = robot_settings
+        self.result = None
+        self.runs = 0
 
+    def set_results(self, result: Result):
+        self.result = result
+
+    def increment_run(self):
+        self.runs += 1
+
+    def get_runs(self) -> int:
+        return self.runs
+    
 # Class for the simulation to send to this algorithm:
 class RobotMessage:
     def __init__(self, layout: Layout, result_success=False, result_time=0):
@@ -61,20 +101,54 @@ class RunHandler:
     def __init__(self):
         self.runs = []
 
+    def has_runs(self) -> bool:
+        return len(self.runs) > 0
+
     def add_new_run(self, layout: Layout):
         self.runs.append(layout)
 
-    def handle_result(self, layout_id: str, robot_message: RobotMessage):
+    def get_first_run(self) -> Layout:
+        return self.runs[0]
+
+    def handle_result(self, robot_message: RobotMessage) -> Layout:
+        go_to_next_run = False
         for run in self.runs:
-            if run.id == layout_id:
+            if go_to_next_run:
+                print("go to next run")
+                return run
+            
+            if run.id == robot_message.layout.id:
+                run.increment_run()
                 if robot_message.result_success == True:
+                    print("finished run")
+
+                    run.set_results(Result(True, robot_message.result_time, len(run.positions)))
+
+                    announce_orientation_evaluation(run.get_runs())
                     # The run was success, go to the next configuration
-                    pass
+                    go_to_next_run = True
                 else:
-                    run.robot_settings
+                    # Lower the robot parameters, but if the parameters are too low, go to the next run instead
+                    should_run_again = run.robot_settings.lower_values()
+                    if should_run_again:
+                        print("run again")
+                        return run
                     
+                    # Set the run to be a failure
+                    run.set_results(Result(False, 0, 0))
+                    
+                    go_to_next_run = True 
+    
+    def get_best_run(self) -> Layout:
+        best_run = None
+        for run in self.runs:
+            if best_run == None:
+                best_run = run
+            elif run.result.get_score() > best_run.result.get_score():
+                best_run = run
 
-
+        return best_run
+                
 
 def get_all_orientations(width, length, height):
     orientation_dict = {}
@@ -225,12 +299,45 @@ def get_layouts(num_boxes, width, length, height, box_weight, fragile):
 #   size of a box
 #   if the content is fragile
 
-def Setup(num_boxes, width, length, height, box_weight, fragile):
-    # Generate all possible layouts
-    layouts = get_layouts(num_boxes, width, length, height, box_weight, fragile)
-    print(f"Generated {len(layouts)} layouts")
+class Algorithm:
+    def __init__(self): 
+        self.run_handler = RunHandler()
 
-import time
-start_time = time.time()
-Setup(100, 10, 20, 30, 10, False)
-print("--- %s seconds ---" % (time.time() - start_time))
+    def Setup(self, num_boxes, width, length, height, box_weight, fragile):
+        # Generate all possible layouts
+        layouts = get_layouts(num_boxes, width, length, height, box_weight, fragile)
+        print(f"Generated {len(layouts)} layouts")
+
+        for layout in layouts:
+            self.run_handler.add_new_run(layout)
+
+        len_layouts = len(layouts)
+        return len_layouts
+        
+
+    def EvaluateRun(self, robot_message: RobotMessage):
+        print("Evaluate run: " + robot_message.layout.id)
+        # run_to_perform could be the same run with lower robot parameters or the next layout
+        run_to_perform = self.run_handler.handle_result(robot_message)
+        if run_to_perform is None:
+            return
+        
+        self.EvaluateRun(mock_simulator(run_to_perform))
+        
+
+    def StartSimulation(self):
+        print("Start Simulation")
+        if self.run_handler.has_runs():
+            print("has runs")
+            # This will keep calling EvaluateRun until there are no more runs left
+            self.EvaluateRun(mock_simulator(self.run_handler.get_first_run()))
+
+        # There are no more runs left, now get the best run
+        best_run = self.run_handler.get_best_run()
+        announce_best_run(best_run)
+
+
+# import time
+# start_time = time.time()
+# Setup(100, 10, 20, 30, 10, False)
+# print("--- %s seconds ---" % (time.time() - start_time))

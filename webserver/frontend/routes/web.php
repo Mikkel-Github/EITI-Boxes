@@ -14,7 +14,7 @@ Route::middleware([CorsMiddleware::class])->group(function () {
     Route::get('/transportation', function () {
         return Inertia::render('Dashboard');
     });
-    Route::get('/simulation', function () {
+    Route::get('/simulation/{id}/{generated_orientations}', function () {
         return Inertia::render('SimulationFeed');
     });
     Route::get('/browse-reports', function () {
