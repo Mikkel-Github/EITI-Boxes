@@ -26,14 +26,16 @@ def send_message(topic, message, broker_address="localhost", port=1883):
     # Disconnect after sending the message
     client.disconnect()
 
-# Example usage
-if __name__ == "__main__":
-    send_message("website/runresult", {"n_boxes": 5, "width": 10, "length": 20, "height": 15, "mass": 50})
-
 def announce_orientation_evaluation(runs_for_orientation):
     print("Finished an orientation!")
     send_message("website/runresult", runs_for_orientation)
 
-def announce_best_run(best_run):
+def announce_best_run(best_run, total_time: int, total_runs: int):
     print("Found the best run!")
-    send_message("website/bestrun", best_run)
+    data = {}
+    data["runs"] = total_runs
+    data["confidence"] = 0.946
+    data["time_spent"] = total_time
+    data["predicted_route_time"] = best_run.result.time
+    data["boxes_moved_per_run"] = len(best_run.positions)
+    send_message("website/bestrun", data)

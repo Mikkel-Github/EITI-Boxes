@@ -2,7 +2,7 @@
 import { useGLTF } from '@tresjs/cientos'
 import { shallowRef, watch, defineProps } from 'vue'
 
-const { scene: model } = await useGLTF('models/box/box.gltf')
+const { scene: model } = await useGLTF('http://127.0.0.1:8000/models/box/box.gltf')
 
 // Define props for scale
 const props = defineProps({

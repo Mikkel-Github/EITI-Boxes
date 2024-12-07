@@ -106,9 +106,11 @@
 </style>
 
 <script lang="ts">
-import mqttService from '@/services/MqttService';
 import { ref, reactive, watch } from 'vue'
 import gsap from 'gsap'
+
+import mqttService from '@/services/MqttService';
+import { Report, updateReport } from '@/services/DatabaseHandler';
 
 // Components
 import RenderView from '../Components/BoxItComponents/RenderView.vue';
@@ -211,13 +213,25 @@ export default {
 
             this.loading_percentage = (this.orientations_tried / this.total_orientations) * 100
         });
-        mqttService.subscribe('website/bestrun', (topic, message) => {
+        mqttService.subscribe('website/bestrun', async (topic, message) => {
             if(topic != 'website/bestrun') return
             console.log('Received message on topic website/bestrun:', message);
+
+            const data = JSON.parse(message.toString())
+            if(!data.hasOwnProperty('runs') || data.runs == '' || !data.hasOwnProperty('confidence') || data.confidence == '' || !data.hasOwnProperty('time_spent') || data.time_spent == '' || !data.hasOwnProperty('predicted_route_time') || data.predicted_route_time == '' || !data.hasOwnProperty('boxes_moved_per_run') || data.boxes_moved_per_run == '') return
+
+
+            const report: Report = {
+                orientations_tried: Number(this.total_orientations),
+                runs: Number(data.runs),
+                confidence: Number(data.confidence),
+                time_spent: Number(data.time_spent),
+                predicted_route_time: Number(data.predicted_route_time),
+                boxes_moved_per_run: Number(data.boxes_moved_per_run),
+            };
+            const finalReport = await updateReport(this.id, report);
         });
 
-        console.log("SENDIN MESSAGE TO BOX PLACEMENT")
-        // mqttService.publish('box_placement/websiteready', JSON.stringify({ start_sim: true }));
         mqttService.publish('box_placement/websiteready');
 
         setInterval(() => {

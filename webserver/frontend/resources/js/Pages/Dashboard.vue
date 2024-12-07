@@ -35,6 +35,7 @@ import FileUpload from '../Components/BoxItComponents/FileUpload.vue';
 <script lang="ts">
 import { Inertia } from '@inertiajs/inertia';
 
+import { Report, saveReport, getReports } from '@/services/DatabaseHandler';
 import mqttService from '@/services/MqttService';
 
 export default {
@@ -81,17 +82,23 @@ export default {
         },
     },
     mounted() {
-        mqttService.subscribe('website/showlivesim', (topic, message) => {
+        mqttService.subscribe('website/showlivesim', async (topic, message) => {
             if(topic != 'website/showlivesim') return
 
-            console.log('Received message on topic website/showlivesim:', message);
-
             const data = JSON.parse(message.toString())
-            console.log(data)
-            console.log(typeof data)
-            if(!data.hasOwnProperty('id') || data.id == '' || !data.hasOwnProperty('generated_orientations') || data.generated_orientations == '') return
+            if(!data.hasOwnProperty('generated_orientations') || data.generated_orientations == '') return
 
-            Inertia.visit(`/simulation/${data.id}/${data.generated_orientations}`);
+            const reports = await getReports()
+            let id = 1
+            if(reports.length > 0) id = reports.at(-1).id + 1
+            console.log(id)
+
+            console.log(data)
+            const partialReport: Report = { id: id, company_name: "Company A", robot_model: "MiR 100", map: "Warehouse 1", route: "Route A" };
+            console.log(partialReport)
+            const savedReport = await saveReport(partialReport);
+
+            Inertia.visit(`/simulation/${id}/${data.generated_orientations}`);
         });
     },
     beforeUnmount() {

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { OrbitControls } from '@tresjs/cientos'
-import Box from './Box.vue';
-import Robot from './Robot.vue';
+import Box from '@/Components/BoxItComponents/Box.vue';
+import Robot from '@/Components/BoxItComponents/Robot.vue';
 </script>
 
 <template>

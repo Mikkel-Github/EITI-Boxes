@@ -31,8 +31,8 @@ def mock_simulator(layout: Layout) -> RobotMessage:
     The simulation will take around 40 seconds with a random variation and may fail based on the layout's robot settings.
     """
     # Initial setup
-    base_simulation_time = 10  # Base time for simulation in seconds
-    random_variation = random.uniform(-5, 5)  # Random variation in the range of -5 to +5 seconds
+    base_simulation_time = 2  # Base time for simulation in seconds
+    random_variation = random.uniform(-1, 1)  # Random variation in the range of -5 to +5 seconds
     total_simulation_time = base_simulation_time + random_variation
 
     # Calculate failure chance based on robot settings (the closer to default values, the higher the failure chance)
@@ -46,7 +46,7 @@ def mock_simulator(layout: Layout) -> RobotMessage:
 
     # Random chance for failure
     result_success = random.random() > failure_chance  # Simulate success or failure
-    result_time = total_simulation_time if result_success else random.uniform(5, total_simulation_time - 5)
+    result_time = total_simulation_time if result_success else random.uniform(1, total_simulation_time - 1)
 
     # Simulate the robot "doing work" for the specified time (just for simulation, can be removed if unnecessary)
     time.sleep(result_time)

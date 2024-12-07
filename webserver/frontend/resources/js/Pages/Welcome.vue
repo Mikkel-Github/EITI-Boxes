@@ -63,6 +63,8 @@
 </style>
 
 <script lang="ts">
+import { Inertia } from '@inertiajs/inertia';
+
 import mqttService from '@/services/MqttService';
 
 export default {
@@ -127,6 +129,7 @@ export default {
                 return
             }
             console.log(`Logging in account: ${this.form.email}, ${this.form.password}`)
+            Inertia.visit(`/transportation`);
         }
     },
     mounted() {

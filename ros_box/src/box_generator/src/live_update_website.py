@@ -23,7 +23,6 @@ def on_message(client, userdata, msg):
     if(str(msg.topic) == "box_placement/generate_setup"):
         len_layouts = a.Setup(payload['n_boxes'], payload['width'], payload['length'], payload['height'], payload['mass'], False)
         data = {}
-        data["id"] = str(random.randint(0, 99999))
         data["generated_orientations"] = len_layouts
         client.publish("website/showlivesim", json.dumps(data))
         # client.publish("box_placement", str(layouts[0]))

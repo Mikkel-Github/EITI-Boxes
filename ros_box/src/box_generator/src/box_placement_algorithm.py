@@ -148,7 +148,16 @@ class RunHandler:
                 best_run = run
 
         return best_run
+    
+    def get_total_time(self) -> int:
+        total_time = 0
+        for run in self.runs:
+            total_time += run.result.time
+        return total_time
                 
+    def get_total_runs(self) -> int:
+        total_runs = len(self.runs)
+        return total_runs
 
 def get_all_orientations(width, length, height):
     orientation_dict = {}
@@ -328,13 +337,15 @@ class Algorithm:
     def StartSimulation(self):
         print("Start Simulation")
         if self.run_handler.has_runs():
-            print("has runs")
+            print("Runs: %s" % len(self.run_handler.runs))
             # This will keep calling EvaluateRun until there are no more runs left
             self.EvaluateRun(mock_simulator(self.run_handler.get_first_run()))
 
         # There are no more runs left, now get the best run
         best_run = self.run_handler.get_best_run()
-        announce_best_run(best_run)
+        total_time = self.run_handler.get_total_time()
+        total_runs = self.run_handler.get_total_runs()
+        announce_best_run(best_run, total_time, total_runs)
 
 
 # import time

@@ -10,10 +10,14 @@ import Header from '../Components/BoxItComponents/Header.vue';
         <div class="Column">
             <Header />
 
-            <div class="Outer">
+            <div class="Outer Column">
                 <h1>Reports</h1>
                 <br>
-                <div class="Simulation-Setup-Container Row">
+                <div class="Row">
+                    <div class="Simulation-Setup-Container Column">
+                        <button class="btn btn-primary" @mousedown="OpenReport(report.id)" v-for="report in reports">{{ report.id + " - " + report.company_name }}</button>
+                    </div>
+                    <div class="Column Flex" />
                 </div>
             </div>
         </div>
@@ -24,11 +28,13 @@ import Header from '../Components/BoxItComponents/Header.vue';
 </style>
 
 <script lang="ts">
-import mqttService from '@/services/MqttService';
+import { Inertia } from '@inertiajs/inertia';
+import { getReports } from '@/services/DatabaseHandler';
 
 export default {
     data() {
         return {
+            reports: [],
         }
     },
     props: {
@@ -36,8 +42,14 @@ export default {
     computed: {
     },
     methods: {
+        OpenReport(id: Number) {
+            Inertia.visit(`/report/${id}`);
+        },
     },
-    mounted() {
+    async mounted() {
+        console.log("Setup")
+        this.reports = await getReports()
+        console.log(this.reports)
     },
     beforeUnmount() {
     }
