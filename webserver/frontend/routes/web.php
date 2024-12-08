@@ -23,6 +23,9 @@ Route::middleware([CorsMiddleware::class])->group(function () {
     Route::get('/report/{id}', function ($id) {
         return Inertia::render('Report', ['id' => $id]);
     });
+    Route::get('/render', function () {
+        return Inertia::render('RenderTest');
+    });
 
     // Uncomment and add any additional routes as needed
     /*

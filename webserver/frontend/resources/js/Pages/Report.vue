@@ -1,8 +1,9 @@
 <script setup lang="ts">
-import RenderView from '../Components/BoxItComponents/RenderView.vue';
+// import RenderView from '../Components/BoxItComponents/RenderView.vue';
 import SimulationSetup from '../Components/BoxItComponents/SimulationSetup.vue';
 import SimulationFeed from '../Components/BoxItComponents/SimulationFeed.vue';
 import Header from '../Components/BoxItComponents/Header.vue';
+import RenderTest from '../Pages/RenderTest.vue';
 </script>
 
 <template>
@@ -20,10 +21,19 @@ import Header from '../Components/BoxItComponents/Header.vue';
                             <div class="Column" style="gap: 2rem;">
                                 <div class="Column">
                                     <h2>Shipment settings</h2>
-                                    <span><span style="font-weight: bold;">Robot model:</span>    {{ robot_model }}</span>
-                                    <span><span style="font-weight: bold;">Map:</span>    {{ map.name }}</span>
-                                    <span><span style="font-weight: bold;">Route:</span>    {{ route.name }}</span>
+                                    <span><span style="font-weight: bold;">Robot model:</span>      {{ robot_model }}</span>
+                                    <span><span style="font-weight: bold;">Map:</span>              {{ map.name }}</span>
+                                    <span><span style="font-weight: bold;">Route:</span>            {{ route.name }}</span>
+                                    <span><span style="font-weight: bold;">Box size:</span>
+                                        <div class="Column" style="margin-left: 2rem; gap: 0;">
+                                            <span>height: {{ dimensions.height }}cm</span>
+                                            <span>width:   {{ dimensions.width }}cm</span>
+                                            <span>length: {{ dimensions.length }}cm</span>
+                                        </div>
+                                    </span>
+                                    <span><span style="font-weight: bold;">Box weight:</span>       {{ mass }}g</span>
                                 </div>
+                                <hr>
                                 <div class="Column">
                                     <h2>Simulation details</h2>
                                     <span><span style="font-weight: bold;">Simulation time:</span>    {{ formatTime(simulation.time.toFixed(0))}}</span>
@@ -36,18 +46,35 @@ import Header from '../Components/BoxItComponents/Header.vue';
                                 <h2>Shipment details</h2>
                                 <div class="Column">
                                     <span><span style="font-weight: bold;">Boxes moved per run:</span>     {{ shipment.boxes_per_run }}</span>
+                                    <span><span style="font-weight: bold;">Boxes moved per hour:</span>    {{ (shipment.boxes_per_run * (3600 / shipment.predicted_time)).toFixed(0) }}</span>
                                     <span><span style="font-weight: bold;">Total boxes to move:</span>     {{ shipment.total_boxes }}</span>
                                     <span><span style="font-weight: bold;">Total trips to make:</span>     {{ (shipment.total_boxes / shipment.boxes_per_run).toFixed(0) }}</span>
-                                    <span><span style="font-weight: bold;">Boxes moved per hour:</span>    {{ shipment.boxes_per_run * (3600 / shipment.predicted_time) }}</span>
+                                    <span><span style="font-weight: bold;">Weight per trip:</span>         {{ (mass * shipment.boxes_per_run) / 1000 }}kg</span>
                                     <span><span style="font-weight: bold;">Predicted route time:</span>    {{ formatTime(shipment.predicted_time.toFixed(0)) }}</span>
                                     <span><span style="font-weight: bold;">Predicted total time:</span>    {{ formatTime(shipment.predicted_time * (shipment.total_boxes / shipment.boxes_per_run).toFixed(0)) }}</span>
+                                </div>
+                                <br>
+                                <hr>
+                                <h2>Robot settings</h2>
+                                        <!-- self.acceleration = acceleration
+                                        self.deacceleration = deacceleration
+                                        self.speed = speed
+                                        self.velocity = velocity
+                                        self.velocity_theta = velocity_theta -->
+
+                                <div class="Column">
+                                    <span><span style="font-weight: bold;">Acceleration:</span>     {{ robot_settings.acceleration.toFixed(2) }}</span>
+                                    <span><span style="font-weight: bold;">Deacceleration:</span>   {{ robot_settings.deacceleration.toFixed(2) }}</span>
+                                    <span><span style="font-weight: bold;">Speed:</span>            {{ robot_settings.speed.toFixed(2) }}</span>
+                                    <span><span style="font-weight: bold;">Velocity:</span>         {{ robot_settings.velocity.toFixed(2) }}</span>
+                                    <span><span style="font-weight: bold;">Velocity Theta:</span>   {{ robot_settings.velocity_theta.toFixed(2) }}</span>
                                 </div>
                             </div>
                         </div>
                     </div>
                     <div class="Simulation-Setup-Container Row Flex">
                         <!-- 3D view -->
-                        <RenderView :scale="dimensions" />
+                        <RenderTest v-if="positions.length > 0" :boxDimensions="dimensions" :boxPositions="positions" />
                     </div>
                 </div>
            </div>
@@ -64,9 +91,8 @@ import { getReports } from '@/services/DatabaseHandler';
 export default {
     data() {
         return {
-            mass: 0,
-            amount: 0,
-            dimensions: { height: 10, width: 10, length: 10 },
+            mass: 10,
+            dimensions: { height: 10, width: 10, length: 20 },
             report_id: "",
             companyName: "Googologoloo",
             robot_model: "MiR100",
@@ -88,6 +114,14 @@ export default {
                 predicted_time: 30,
                 boxes_per_run: 10,
                 total_boxes: 100,
+            },
+            positions: [],
+            robot_settings: {
+                acceleration: 1,
+                deacceleration: 1,
+                speed: 1.5,
+                velocity: 1,
+                velocity_theta: 1,
             }
         }
     },
@@ -115,13 +149,26 @@ export default {
             this.simulation.runs = this.report.runs;
             this.shipment.predicted_time = this.report.predicted_route_time;
             this.shipment.boxes_per_run = this.report.boxes_moved_per_run;
-            this.shipment.total_boxes = 999
+            this.shipment.total_boxes = this.report.total_boxes
+
+            this.amount = this.report.total_boxes
+            this.mass = this.report.mass
+            this.dimensions = { height: this.report.height, width: this.report.width, length: this.report.length }
+
+            this.positions = this.report.positions
+
+            this.robot_settings = {
+                acceleration: this.report.acceleration,
+                deacceleration: this.report.deacceleration,
+                speed: this.report.speed,
+                velocity: this.report.velocity,
+                velocity_theta: this.report.velocity_theta,
+            }
         },
     },
     async mounted() {
         this.report_id = window.location.href.split('/').pop();
 
-        console.log("Setup")
         const reports = await getReports()
         this.report = reports[this.report_id - 1]
         console.log(this.report)

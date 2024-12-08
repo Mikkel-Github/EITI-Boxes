@@ -106,6 +106,8 @@
 </style>
 
 <script lang="ts">
+import { Inertia } from '@inertiajs/inertia';
+
 import { ref, reactive, watch } from 'vue'
 import gsap from 'gsap'
 
@@ -218,8 +220,7 @@ export default {
             console.log('Received message on topic website/bestrun:', message);
 
             const data = JSON.parse(message.toString())
-            if(!data.hasOwnProperty('runs') || data.runs == '' || !data.hasOwnProperty('confidence') || data.confidence == '' || !data.hasOwnProperty('time_spent') || data.time_spent == '' || !data.hasOwnProperty('predicted_route_time') || data.predicted_route_time == '' || !data.hasOwnProperty('boxes_moved_per_run') || data.boxes_moved_per_run == '') return
-
+            if(!data.hasOwnProperty('runs') || data.runs == '' || !data.hasOwnProperty('confidence') || data.confidence == '' || !data.hasOwnProperty('time_spent') || data.time_spent == '' || !data.hasOwnProperty('predicted_route_time') || data.predicted_route_time == '' || !data.hasOwnProperty('boxes_moved_per_run') || data.boxes_moved_per_run == '' || !data.hasOwnProperty('positions') || data.positions == '' || !data.hasOwnProperty('dimension') || data.dimension == '') return
 
             const report: Report = {
                 orientations_tried: Number(this.total_orientations),
@@ -228,8 +229,19 @@ export default {
                 time_spent: Number(data.time_spent),
                 predicted_route_time: Number(data.predicted_route_time),
                 boxes_moved_per_run: Number(data.boxes_moved_per_run),
+                positions: data.positions,
+                height: Number(data.dimension.height),
+                width: Number(data.dimension.width),
+                length: Number(data.dimension.length),
+                acceleration: Number(data.acceleration),
+                deacceleration: Number(data.deacceleration),
+                speed: Number(data.speed),
+                velocity: Number(data.velocity),
+                velocity_theta: Number(data.velocity_theta),
             };
             const finalReport = await updateReport(this.id, report);
+
+            Inertia.visit(`/report/${this.id}`);
         });
 
         mqttService.publish('box_placement/websiteready');

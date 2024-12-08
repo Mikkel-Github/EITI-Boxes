@@ -20,5 +20,20 @@ class Report extends Model
         'time_spent',
         'predicted_route_time',
         'boxes_moved_per_run',
+        'total_boxes',
+        'mass',
+        'height',
+        'width',
+        'length',
+        'positions',
+        'acceleration',
+        'deacceleration',
+        'speed',
+        'velocity',
+        'velocity_theta',
+    ];
+
+    protected $casts = [
+        'positions' => 'json', // Automatically handles conversion to/from JSON
     ];
 }

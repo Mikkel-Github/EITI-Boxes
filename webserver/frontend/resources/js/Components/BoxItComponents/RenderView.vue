@@ -8,7 +8,7 @@ import Robot from '@/Components/BoxItComponents/Robot.vue';
   <div class="Box-Specification-Container Column Flex">
     <h2>Preview</h2>
         <div class="Column Flex" style="cursor: grab;">
-            <TresCanvas preset="realistic" shadows="true">
+            <TresCanvas preset="realistic" shadows="true" render-mode="on-demand">
                 <TresGridHelper v-if="showGrid" :args="[10, 10]" />
                 <TresAxesHelper v-if="showOrientation" :args="[5]" />
 
@@ -79,7 +79,11 @@ export default {
         scale: {
           type: { height: Number, width: Number, length: Number },
           required: true
-        }
+        },
+        positions: {
+            type: Array,
+            required: false,
+        },
     },
     mounted() {
     },

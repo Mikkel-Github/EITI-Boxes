@@ -14,6 +14,20 @@ export interface Report {
     time_spent?: number;
     predicted_route_time?: number;
     boxes_moved_per_run?: number;
+
+    total_boxes?: number;
+    mass?: number,
+    height?: number,
+    width?: number,
+    length?: number,
+
+    positions?: [{ x: number, y: number, z: number }]
+
+    acceleration?: number,
+    deacceleration?: number,
+    speed?: number,
+    velocity?: number,
+    velocity_theta?: number,
 }
 
 // Save a new Report

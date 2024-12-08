@@ -36,7 +36,7 @@ def mock_simulator(layout: Layout) -> RobotMessage:
     total_simulation_time = base_simulation_time + random_variation
 
     # Calculate failure chance based on robot settings (the closer to default values, the higher the failure chance)
-    failure_chance = 0.1  # Default failure chance for random settings
+    failure_chance = 0.25  # Default failure chance for random settings
     if (layout.robot_settings.acceleration == 1.5 and
         layout.robot_settings.deacceleration == -1.5 and
         layout.robot_settings.speed == 1.2 and
@@ -50,6 +50,8 @@ def mock_simulator(layout: Layout) -> RobotMessage:
 
     # Simulate the robot "doing work" for the specified time (just for simulation, can be removed if unnecessary)
     time.sleep(result_time)
+
+    result_time += random.uniform(60, 140)
 
     # Return the result as a RobotMessage
     return RobotMessage(layout=layout, result_success=result_success, result_time=result_time)

@@ -55,9 +55,6 @@ export default {
         updateSettings(data) {
             this.mass = data.mass
             this.amount = data.amount
-            console.log("This data")
-            console.log(this.mass)
-            console.log(this.amount)
 
             const new_dimensions = { height: this.dimensions.height, width: this.dimensions.width, length: this.dimensions.length }
 
@@ -66,19 +63,13 @@ export default {
             if(data.dimensions.length != '') new_dimensions.length = data.dimensions.length
 
             this.dimensions = new_dimensions
-
-            console.log(this.dimensions)
         },
         toggleMap(data) {
-            console.log("toggleMap")
             this.map_creator_open = !this.map_creator_open
         },
         StartSimulation() {
             let payload = {n_boxes: this.amount, mass: this.mass, height: this.dimensions.height, width: this.dimensions.width, length: this.dimensions.length}
             mqttService.publish('box_placement/generate_setup', JSON.stringify(payload));
-        },
-        stopSimulating() {
-            // mqttService.publish('box_spawner/stop');
         },
     },
     mounted() {
@@ -88,14 +79,12 @@ export default {
             const data = JSON.parse(message.toString())
             if(!data.hasOwnProperty('generated_orientations') || data.generated_orientations == '') return
 
+            // Find the next report id by getting the reports and adding 1 to the last report's id
             const reports = await getReports()
             let id = 1
             if(reports.length > 0) id = reports.at(-1).id + 1
-            console.log(id)
 
-            console.log(data)
-            const partialReport: Report = { id: id, company_name: "Company A", robot_model: "MiR 100", map: "Warehouse 1", route: "Route A" };
-            console.log(partialReport)
+            const partialReport: Report = { id: id, company_name: "Company A", robot_model: "MiR 100", map: "Warehouse 1", route: "Route A", total_boxes: Number(this.amount), mass: Number(this.mass) };
             const savedReport = await saveReport(partialReport);
 
             Inertia.visit(`/simulation/${id}/${data.generated_orientations}`);

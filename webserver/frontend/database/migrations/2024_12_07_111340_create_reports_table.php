@@ -23,6 +23,17 @@ return new class extends Migration
             $table->integer('time_spent')->default(0);
             $table->integer('predicted_route_time')->default(0);
             $table->integer('boxes_moved_per_run')->default(0);
+            $table->integer('total_boxes')->default(0);
+            $table->float('mass')->default(0);
+            $table->float('height')->default(0);
+            $table->float('width')->default(0);
+            $table->float('length')->default(0);
+            $table->json('positions');
+            $table->float('acceleration')->default(0);
+            $table->float('deacceleration')->default(0);
+            $table->float('speed')->default(0);
+            $table->float('velocity')->default(0);
+            $table->float('velocity_theta')->default(0);
             $table->timestamps();
         });
     }

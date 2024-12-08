@@ -38,4 +38,12 @@ def announce_best_run(best_run, total_time: int, total_runs: int):
     data["time_spent"] = total_time
     data["predicted_route_time"] = best_run.result.time
     data["boxes_moved_per_run"] = len(best_run.positions)
+    data["positions"] = [position.to_dict() for position in best_run.positions]  # Convert to dict
+    data["dimension"] = best_run.orientation.to_dict()
+    data["acceleration"] = best_run.robot_settings.acceleration
+    data["deacceleration"] = best_run.robot_settings.deacceleration
+    data["speed"] = best_run.robot_settings.speed
+    data["velocity"] = best_run.robot_settings.velocity
+    data["velocity_theta"] = best_run.robot_settings.velocity_theta
+
     send_message("website/bestrun", data)

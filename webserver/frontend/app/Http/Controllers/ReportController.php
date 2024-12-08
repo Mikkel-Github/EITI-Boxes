@@ -40,6 +40,20 @@ class ReportController extends Controller
             'time_spent' => 'nullable|integer',
             'predicted_route_time' => 'nullable|integer',
             'boxes_moved_per_run' => 'nullable|integer',
+            'total_boxes' => 'nullable|integer',
+            'mass' => 'nullable|numeric',
+            'height' => 'nullable|numeric',
+            'width' => 'nullable|numeric',
+            'length' => 'nullable|numeric',
+            'positions' => 'nullable|array',
+            'positions.*.x' => 'required_with:positions|numeric',
+            'positions.*.y' => 'required_with:positions|numeric',
+            'positions.*.z' => 'required_with:positions|numeric',
+            'acceleration' => 'nullable|numeric',
+            'deacceleration' => 'nullable|numeric',
+            'speed' => 'nullable|numeric',
+            'velocity' => 'nullable|numeric',
+            'velocity_theta' => 'nullable|numeric',
         ]);
 
         $report = Report::create([
@@ -54,6 +68,17 @@ class ReportController extends Controller
             'time_spent' => $validatedData['time_spent'] ?? 0,
             'predicted_route_time' => $validatedData['predicted_route_time'] ?? 0,
             'boxes_moved_per_run' => $validatedData['boxes_moved_per_run'] ?? 0,
+            'total_boxes' => $validatedData['total_boxes'] ?? 0,
+            'mass' => $validatedData['mass'] ?? 0,
+            'height' => $validatedData['height'] ?? 0,
+            'width' => $validatedData['width'] ?? 0,
+            'length' => $validatedData['length'] ?? 0,
+            'positions' => $validatedData['positions'] ?? '[]', // Default to empty JSON array
+            'acceleration' => $validatedData['acceleration'] ?? 1.5,
+            'deacceleration' => $validatedData['deacceleration'] ?? 1.5,
+            'speed' => $validatedData['speed'] ?? 1.5,
+            'velocity' => $validatedData['velocity'] ?? 1.5,
+            'velocity_theta' => $validatedData['velocity_theta'] ?? 1.5,
         ]);
 
         // $report = Report::create($validatedData);
@@ -94,6 +119,20 @@ class ReportController extends Controller
             'time_spent' => 'nullable|numeric',
             'predicted_route_time' => 'nullable|numeric',
             'boxes_moved_per_run' => 'nullable|integer',
+            'total_boxes' => 'nullable|integer',
+            'mass' => 'nullable|numeric',
+            'height' => 'nullable|numeric',
+            'width' => 'nullable|numeric',
+            'length' => 'nullable|numeric',
+            'positions' => 'nullable|array',
+            'positions.*.x' => 'required_with:positions|numeric',
+            'positions.*.y' => 'required_with:positions|numeric',
+            'positions.*.z' => 'required_with:positions|numeric',
+            'acceleration' => 'nullable|numeric',
+            'deacceleration' => 'nullable|numeric',
+            'speed' => 'nullable|numeric',
+            'velocity' => 'nullable|numeric',
+            'velocity_theta' => 'nullable|numeric',
         ]);
 
         $report->update($validatedData); // Update with partial data

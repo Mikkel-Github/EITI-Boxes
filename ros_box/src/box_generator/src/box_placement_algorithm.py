@@ -1,5 +1,8 @@
 import math
 import uuid
+import itertools
+
+import random
 
 from mock_simulator import mock_simulator
 
@@ -15,6 +18,9 @@ class Orientation:
         self.length = length
         self.height = height
 
+    def to_dict(self):
+        return {"width": self.width, "length": self.length, "height": self.height}
+
 class Point:
     x: float
     y: float
@@ -25,9 +31,12 @@ class Point:
         self.y = y
         self.z = z
 
-MAX_HEIGHT = 200 # meters
-MAX_WIDTH = 60
-MAX_LENGTH = 80
+    def to_dict(self):
+        return {"x": self.x, "y": self.y, "z": self.z}
+
+MAX_HEIGHT = 50 # centimeters
+MAX_WIDTH = 41
+MAX_LENGTH = 62
 MAX_WEIGHT = 100000 # in grams
 
 class RobotSettings:
@@ -39,10 +48,18 @@ class RobotSettings:
         self.velocity_theta = velocity_theta
 
     def lower_values(self) -> bool:
-        self.acceleration -= 0.1
-        self.deacceleration -= 0.1
-        self.velocity -= 0.1
-        self.velocity_theta -= 0.1
+        outcome = random.randint(1, 4)
+        if outcome == 1:
+            self.acceleration -= random.random()
+            self.deacceleration += random.random()
+        elif outcome == 2:
+            self.velocity -= random.random()
+        elif outcome == 3:
+            self.velocity_theta -= random.random()
+        else:
+            
+            self.speed -= random.random()
+        
 
         if self.acceleration < 0.8:
             return False
@@ -99,6 +116,9 @@ class RobotMessage:
 
 class RunHandler:
     def __init__(self):
+        self.runs = []
+
+    def empty(self):
         self.runs = []
 
     def has_runs(self) -> bool:
@@ -241,8 +261,83 @@ def fill_new(num_boxes, box_width, box_length, box_height, max_boxes_width, max_
         # Go through the grid of potential places
         for y in range(max_boxes_length): 
             for x in range(max_boxes_width):
-                xx = ((x * box_width) + (box_width/2)) + (MAX_WIDTH/2) - ((x/2) * box_width)
-                yy = ((y * box_length) + (box_length/2)) + (MAX_LENGTH/2) - ((y/2) * box_length)
+                xx = ((x * box_width) + (box_width/2)) - (MAX_WIDTH / 2)# + (MAX_WIDTH/2) - ((x/2) * box_width)
+                yy = ((y * box_length) + (box_length/2)) - (MAX_LENGTH / 2)# + (MAX_LENGTH/2) - ((y/2) * box_length)
+                
+                positions.append(Point(xx, yy, z))
+                
+                remaining_boxes -= 1
+                if(remaining_boxes <= 0):
+                    print("No more boxes to place limit reached")
+                    return positions
+
+                total_weight += box_weight
+
+                # If adding one more box makes it overweight, then stop
+                if total_weight + box_weight > MAX_WEIGHT:
+                    print("Weight limit reached")
+                    return positions
+
+        # When a layer is filled an there is still boxes remaining, go up a layer
+        z += box_height
+
+        # If going up one more layer, goes over the maximum height, then stop
+        if(z + (box_height / 2) > MAX_HEIGHT): 
+            print("Height limit reached")
+            return positions
+    
+    print("No limit reached")
+    return positions
+
+def fill_new_new(num_boxes, box_width, box_length, box_height, max_boxes_width, max_boxes_length, box_weight):
+    positions = []
+    total_weight = 0
+    remaining_boxes = num_boxes
+    z = box_height / 2
+
+    # While there is still boxes to be placed:
+    while remaining_boxes > 0:
+        if remaining_boxes < (max_boxes_length * max_boxes_width) - 1:
+            while remaining_boxes > 0:
+                x_range = math.ceil((remaining_boxes) / max_boxes_length)
+                y_range = remaining_boxes // x_range
+                for x in range(math.ceil(-x_range/2), math.ceil(x_range/2)):
+                    for y in range(math.ceil(-y_range/2), math.ceil(y_range/2)):
+                        # y
+                        y_direction = -1 if y < 0 else 1
+                        y_offset = 1 if y != 0 else 0
+                        yy = (((y - y_direction + (1 - y_offset)) * box_length) + ((box_length) * y_direction) * y_offset) + ((box_length / 2) * (1 - (y_range % 2)))
+
+                        # x
+                        x_direction = -1 if x < 0 else 1
+                        x_offset = 1 if x != 0 else 0
+                        xx = (((x - x_direction + (1 - x_offset)) * box_width) + ((box_width) * x_direction) * x_offset) + ((box_width / 2) * (1 - (x_range % 2)))
+                    
+                        positions.append(Point(xx, yy, z))
+
+                        remaining_boxes -= 1
+                        if(remaining_boxes <= 0):
+                            print("No more boxes to place limit reached")
+                            return positions
+
+                        total_weight += box_weight
+
+                        # If adding one more box makes it overweight, then stop
+                        if total_weight + box_weight > MAX_WEIGHT:
+                            print("Weight limit reached")
+                            return positions
+
+                z += box_height
+                # If going up one more layer, goes over the maximum height, then stop
+                if(z + (box_height / 2) > MAX_HEIGHT): 
+                    print("Height limit reached")
+                    return positions
+
+        # Go through the grid of potential places
+        for y in range(max_boxes_length): 
+            for x in range(max_boxes_width):
+                xx = ((x * box_width) + (box_width/2)) - (MAX_WIDTH / 2)# + (MAX_WIDTH/2) - ((x/2) * box_width)
+                yy = ((y * box_length) + (box_length/2)) - (MAX_LENGTH / 2)# + (MAX_LENGTH/2) - ((y/2) * box_length)
                 
                 positions.append(Point(xx, yy, z))
                 
@@ -289,7 +384,7 @@ def get_layouts(num_boxes, width, length, height, box_weight, fragile):
         print(f"Boxes per length: {boxes_per_length}, boxes per width: {boxes_per_width}, boxes per layer: {boxes_per_layer}, max boxes (could be lower due to weight, height or amount of boxes): {max_boxes}")
 
         # Generate all the positions for 
-        positions = fill_new(num_boxes, orientation.width, orientation.length, orientation.height, boxes_per_width, boxes_per_length, box_weight)
+        positions = fill_new_new(num_boxes, orientation.width, orientation.length, orientation.height, boxes_per_width, boxes_per_length, box_weight)
         print(f"Generated {len(positions)} positions")
 
         # When the simulation returns a result, some of these parameters will be lowered and tried again.
@@ -313,6 +408,7 @@ class Algorithm:
         self.run_handler = RunHandler()
 
     def Setup(self, num_boxes, width, length, height, box_weight, fragile):
+        self.run_handler.empty()
         # Generate all possible layouts
         layouts = get_layouts(num_boxes, width, length, height, box_weight, fragile)
         print(f"Generated {len(layouts)} layouts")
@@ -352,3 +448,7 @@ class Algorithm:
 # start_time = time.time()
 # Setup(100, 10, 20, 30, 10, False)
 # print("--- %s seconds ---" % (time.time() - start_time))
+
+# positions = fill_new_new(56, 10, 10, 10, 4, 6, 10)
+# for pos in positions:
+#     print(f"Box at: ({pos.x}, {pos.y}, {pos.z})")
