@@ -1,13 +1,13 @@
 import paho.mqtt.client as mqtt
 import json
 
-def send_message(topic, message, broker_address="localhost", port=1883):
+def send_message(topic, message, broker_address="mqtt", port=1883):
     """
     Sends a message to the specified MQTT topic.
 
     :param topic: The MQTT topic to send the message to.
     :param message: The message to send (could be a dictionary, string, etc.).
-    :param broker_address: The MQTT broker address (default is localhost).
+    :param broker_address: The MQTT broker address (default is mqtt).
     :param port: The MQTT broker port (default is 1883).
     """
     # Create a new MQTT client instance

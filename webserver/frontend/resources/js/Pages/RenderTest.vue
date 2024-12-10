@@ -53,7 +53,7 @@ onMounted(() => {
   // Load GLTF model for the robot
   const loader = new GLTFLoader()
   loader.load(
-    'http://127.0.0.1:8000/models/robot/mir_100.gltf', // Robot model URL
+    'http://localhost:8000/models/robot/mir_100.gltf', // Robot model URL
     (gltf) => {
       console.log('Robot model loaded:', gltf)
       const robot = gltf.scene
@@ -84,7 +84,7 @@ onMounted(() => {
 
   // Load GLTF model for the box
   loader.load(
-    'http://127.0.0.1:8000/models/box/box.gltf', // Box model URL
+    'http://localhost:8000/models/box/box.gltf', // Box model URL
     (gltf) => {
       console.log('Box model loaded:', gltf) // Check if the model is loaded
       const boxModel = gltf.scene

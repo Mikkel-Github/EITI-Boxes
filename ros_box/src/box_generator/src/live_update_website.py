@@ -1,3 +1,4 @@
+import time
 import paho.mqtt.client as mqtt
 import json
 from box_placement_algorithm import Algorithm
@@ -34,7 +35,7 @@ mqttc = mqtt.Client(mqtt.CallbackAPIVersion.VERSION2)
 mqttc.on_connect = on_connect
 mqttc.on_message = on_message
 
-mqttc.connect("localhost", 1883, 60)
+mqttc.connect("mqtt", 1883, 60)
 
 a = Algorithm()
 
@@ -43,3 +44,5 @@ a = Algorithm()
 # Other loop*() functions are available that give a threaded interface and a
 # manual interface.
 mqttc.loop_forever()
+
+# mqttc.loop_start()  # Use loop_start() to run the loop in a separate thread.

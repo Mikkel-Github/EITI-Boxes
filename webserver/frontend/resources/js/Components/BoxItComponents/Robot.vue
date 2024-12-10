@@ -3,7 +3,7 @@ import { useGLTF } from '@tresjs/cientos'
 import { ref, onMounted } from 'vue'
 
 // Load the model
-const { scene: model } = await useGLTF('http://127.0.0.1:8000/models/robot/mir_100.gltf')
+const { scene: model } = await useGLTF('http://localhost:8000/models/robot/mir_100.gltf')
 
 // Create a reference to manage the position
 const position = ref({ x: 0, y: 0, z: 0 })
