@@ -3,6 +3,8 @@ import RenderView from '../Components/BoxItComponents/RenderView.vue';
 import SimulationSetup from '../Components/BoxItComponents/SimulationSetup.vue';
 import SimulationFeed from '../Components/BoxItComponents/SimulationFeed.vue';
 import Header from '../Components/BoxItComponents/Header.vue';
+
+import dayjs from 'dayjs';
 </script>
 
 <template>
@@ -10,14 +12,18 @@ import Header from '../Components/BoxItComponents/Header.vue';
         <div class="Column">
             <Header />
 
-            <div class="Outer Column">
+            <div class="Outer Column" style="gap: 20px;">
                 <h1>Reports</h1>
-                <br>
-                <div class="Row">
-                    <div class="Simulation-Setup-Container Column">
-                        <button class="btn btn-primary" @mousedown="OpenReport(report.id)" v-for="report in reports">{{ report.id + " - " + report.company_name }}</button>
+                <div v-for="(groupedReports, warehouse) in groupedReports" :key="warehouse" >
+                    <h2>{{ warehouse }}</h2>
+                    <div class="Row">
+                        <div class="Column">
+                            <button v-for="report in groupedReports" :key="report.id" class="btn btn-primary" @mousedown="OpenReport(report.id)">
+                                {{ report.id + " - " + dayjs(report.created_at).format('MMMM D, YYYY h:mm A') + " - " + report.robot_model + " - " + report.route }}
+                            </button>
+                        <hr>
+                        </div>
                     </div>
-                    <div class="Column Flex" />
                 </div>
             </div>
         </div>
@@ -40,6 +46,18 @@ export default {
     props: {
     },
     computed: {
+        groupedReports() {
+            const groups: { [key: string]: Array<any> } = {};
+            this.reports.forEach((report) => {
+                if (report.map) {
+                    if (!groups[report.map]) {
+                        groups[report.map] = [];
+                    }
+                    groups[report.map].push(report);
+                }
+            });
+            return groups;
+        },
     },
     methods: {
         OpenReport(id: Number) {

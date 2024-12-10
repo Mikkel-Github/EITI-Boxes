@@ -46,12 +46,13 @@ import RenderTest from '../Pages/RenderTest.vue';
                                 <h2>Shipment details</h2>
                                 <div class="Column">
                                     <span><span style="font-weight: bold;">Boxes moved per run:</span>     {{ shipment.boxes_per_run }}</span>
-                                    <span><span style="font-weight: bold;">Boxes moved per hour:</span>    {{ (shipment.boxes_per_run * (3600 / shipment.predicted_time)).toFixed(0) }}</span>
                                     <span><span style="font-weight: bold;">Total boxes to move:</span>     {{ shipment.total_boxes }}</span>
-                                    <span><span style="font-weight: bold;">Total trips to make:</span>     {{ (shipment.total_boxes / shipment.boxes_per_run).toFixed(0) }}</span>
+                                    <span><span style="font-weight: bold;">Total trips to make:</span>     {{ Math.ceil(shipment.total_boxes / shipment.boxes_per_run).toFixed(0) }}</span>
+                                    <span><span style="font-weight: bold;">Trips per hour:</span>          {{ shipment.full_runs_hour }}</span>
+                                    <span><span style="font-weight: bold;">Boxes moved per hour:</span>    {{ shipment.full_runs_boxes_hour }}</span>
                                     <span><span style="font-weight: bold;">Weight per trip:</span>         {{ (mass * shipment.boxes_per_run) / 1000 }}kg</span>
                                     <span><span style="font-weight: bold;">Predicted route time:</span>    {{ formatTime(shipment.predicted_time.toFixed(0)) }}</span>
-                                    <span><span style="font-weight: bold;">Predicted total time:</span>    {{ formatTime(shipment.predicted_time * (shipment.total_boxes / shipment.boxes_per_run).toFixed(0)) }}</span>
+                                    <span><span style="font-weight: bold;">Predicted total time:</span>    {{ formatTime(shipment.predicted_time * Math.ceil(shipment.total_boxes / shipment.boxes_per_run).toFixed(0)) }}</span>
                                 </div>
                                 <br>
                                 <hr>
@@ -114,6 +115,8 @@ export default {
                 predicted_time: 30,
                 boxes_per_run: 10,
                 total_boxes: 100,
+                full_runs_hour: 0,
+                full_runs_boxes_hour: 0,
             },
             positions: [],
             robot_settings: {
@@ -150,6 +153,9 @@ export default {
             this.shipment.predicted_time = this.report.predicted_route_time;
             this.shipment.boxes_per_run = this.report.boxes_moved_per_run;
             this.shipment.total_boxes = this.report.total_boxes
+
+            this.shipment.full_runs_hour = Math.floor(3600 / this.shipment.predicted_time);
+            this.shipment.full_runs_boxes_hour = (this.shipment.full_runs_hour * this.shipment.boxes_per_run)
 
             this.amount = this.report.total_boxes
             this.mass = this.report.mass
